@@ -1,0 +1,36 @@
+# LaTeX Build Artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.lot
+*.lof
+*.loa
+*.out
+*.toc
+*.run.xml
+
+# PDF outputs (keep only main/final versions)
+*.pdf
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary compilation files
+*~
+*.swp
+*.swo
+texput.log
+
+# Test/debug scripts
+compile_*.txt
+remove_first_page.py

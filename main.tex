@@ -1,0 +1,420 @@
+﻿\documentclass[a4paper,12pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{fontenc}
+% babel removed - using polyglossia instead for xelatex compatibility
+\usepackage{a4wide}
+\usepackage{graphicx}
+\usepackage{placeins}
+%pour la mise en page des tableaux
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{wrapfig}
+\usepackage{subcaption}
+\usepackage{color, colortbl}
+\definecolor{Gray}{gray}{0.9}
+\definecolor{LightCyan}{rgb}{0.88,1,1}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{array} % for extrarowheight
+\usepackage{enumitem} % For controlling list spacing
+\usepackage{titlesec}  % For controlling section heading spacing
+\usepackage{lscape}
+\usepackage{afterpage}
+\usepackage{rotating}
+\usepackage[nottoc,notlof,notlot]{tocbibind}
+\usepackage{tocloft}
+\usepackage{pdfpages}
+\graphicspath{{images/}{images_pfe/}}
+\newlength\figureheight
+\newlength\figurewidth
+\usepackage{amsmath}
+\usepackage{ifthen}
+\usepackage{ifpdf}
+\ifpdf
+\usepackage[pdftex]{hyperref}
+\else
+\usepackage{hyperref}
+\fi
+\usepackage{color}
+\hypersetup{%
+colorlinks=true,
+linkcolor=black,
+citecolor=black,
+urlcolor=blue}
+% \urlstyle{same}
+\usepackage[top=2.5cm,bottom=2.5cm,right=2.5cm,left=2.5cm]{geometry}
+\usepackage{changepage}
+
+% Define missing colors
+\definecolor{GovernanceColor}{RGB}{0,102,204}
+\definecolor{OrganizationColor}{RGB}{0,61,153}
+\definecolor{AllocationColor}{RGB}{102,178,255}
+\definecolor{DocumentColor}{RGB}{153,76,0}
+\definecolor{ValidationColor}{RGB}{102,102,0}
+\definecolor{CommunicationColor}{RGB}{153,0,153}
+\definecolor{SecurityColor}{RGB}{204,0,0}
+\definecolor{Primary}{RGB}{0,102,204}
+
+\usepackage{tabularx}
+    \newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\usepackage{longtable}
+
+\usepackage{xltabular}
+\renewcommand{\tablename}{Tableau}
+\renewcommand{\figurename}{Figure}
+
+% Graphics and diagram packages
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning,calc}
+\usepackage{pgfgantt}
+
+% Setup language support first (before biblatex)
+\usepackage{polyglossia}
+\setmainlanguage{french}
+% Arabic support disabled - default fonts don't support Arabic script
+% \setotherlanguage{arabic}
+
+% Font configuration removed - using default system fonts
+% \usepackage{fontspec}
+% \newfontfamily\arabicfont[Script=Arabic]{DejaVu Sans}
+
+%pour les références bibliographiques
+\usepackage[citestyle=authoryear,bibstyle=authoryear,doi=false,isbn=false,eprint=false,maxcitenames=1,uniquelist=false,backend=biber]{biblatex}
+\addbibresource{references.bib}
+
+\AtEveryBibitem{
+  \ifentrytype{misc}{
+  }{
+    \clearfield{url}
+    \clearfield{urlyear}
+    
+  }
+}
+
+% ===== CUSTOM LIST SPACING CONFIGURATION =====
+% Reduce vertical spacing in enumerate and itemize for compact documents
+\setlist[enumerate]{
+    topsep=2pt,      % Space before/after list
+    itemsep=2pt,     % Space between items
+    parsep=0pt,      % Space between paragraphs in items
+    leftmargin=*,    % Auto-indent
+    label=\arabic*. % Numbering format
+}
+
+\setlist[itemize]{
+    topsep=2pt,      % Space before/after list
+    itemsep=2pt,     % Space between items
+    parsep=0pt,      % Space between paragraphs in items
+    leftmargin=*     % Auto-indent
+}
+
+% Reduce spacing for nested levels
+\setlist[enumerate,2]{itemsep=1pt, topsep=1pt, parsep=0pt}
+\setlist[itemize,2]{itemsep=1pt, topsep=1pt, parsep=0pt}
+
+% Configure description list spacing as well
+\setlist[description]{
+    topsep=3pt,
+    itemsep=2pt,
+    parsep=2pt,
+    labelwidth=*,
+    leftmargin=!
+}
+
+%% pour la numération des sous sou sections
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{2}
+
+
+
+% pour les algorithmes
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\DontPrintSemicolon
+
+\setlength\arrayrulewidth{1pt}
+\renewcommand{\baselinestretch}{1.05}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\bfseries\nouppercase{\leftmark}}
+\rfoot{\bfseries\thepage}
+\setlength{\headheight}{15.3pt}
+
+\let\headruleORIG\headrule
+
+\renewcommand{\headrule}{\color{black} \headruleORIG}
+\renewcommand{\headrulewidth}{1.0pt}
+\usepackage{colortbl}
+\arrayrulecolor{black}
+
+\fancypagestyle{plain}{
+  \fancyhead{}
+  \fancyfoot[R]{\bfseries\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+
+
+\makeatletter
+\def\@textbottom{\vskip \z@ \@plus 1pt}
+\let\@texttop\relax
+\makeatother
+
+\makeatletter
+\def\cleardoublepage{\clearpage\if@twoside \ifodd\c@page\else%
+  \hbox{}%
+  \thispagestyle{empty}%
+  \newpage%
+  \if@twocolumn\hbox{}\newpage\fi\fi\fi}
+\makeatother
+
+\usepackage{amsthm}
+\usepackage{amssymb,amsmath,bbm}
+\usepackage{array}
+\usepackage{bm}
+\usepackage{multirow}
+\usepackage[footnote]{acronym}
+
+\usepackage[bottom]{footmisc}
+
+
+
+
+
+
+\newtheoremstyle{break}
+  {11pt}{11pt}%
+  {\itshape}{}%
+  {\bfseries}{}%
+  {\newline}{}%
+\theoremstyle{break}
+
+%\theoremstyle{definition}
+\newtheorem{definition}{Définition}[chapter]
+
+%\theoremstyle{definition}
+\newtheorem{theoreme}{Théorème}[chapter]
+
+%\theoremstyle{remark}
+\newtheorem{remarque}{Remarque}[chapter]
+
+%\theoremstyle{plain}
+\newtheorem{propriete}{Propriété}[chapter]
+\newtheorem{exemple}{Exemple}[chapter]
+
+%table break line
+
+\usepackage{makecell}
+
+\renewcommand\theadalign{bl}
+\renewcommand\theadfont{\bfseries}
+\renewcommand\cellalign{bl}
+\renewcommand\cellgape{\Gape[2pt]}
+
+\parskip=2pt
+
+% Control subsubsection spacing (default LaTeX = ~44pt before, ~15pt after)
+\titlespacing*{\subsubsection}{0pt}{8pt}{4pt}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+%\sloppy
+ %%%%********************************************************************
+\usepackage{xcolor}
+\definecolor{quotemark}{gray}{0.7}
+\makeatletter
+\def\fquote{%
+    \@ifnextchar[{\fquote@i}{\fquote@i[]}%]
+           }%
+\def\fquote@i[#1]{%
+    \def\tempa{#1}%
+    \@ifnextchar[{\fquote@ii}{\fquote@ii[]}%]
+                 }%
+\def\fquote@ii[#1]{%
+    \def\tempb{#1}%
+    \@ifnextchar[{\fquote@iii}{\fquote@iii[]}%]
+                      }%
+\def\fquote@iii[#1]{%
+    \def\tempc{#1}%
+    \vspace{1em}%
+    \noindent%
+    \begin{list}{}{%
+         \setlength{\leftmargin}{0.1\textwidth}%
+         \setlength{\rightmargin}{0.1\textwidth}%
+                  }%
+         \item[]%
+         \begin{picture}(0,0)%
+         \put(-15,-5){\makebox(0,0){\scalebox{3}{\textcolor{quotemark}{``}}}}%
+         \end{picture}%
+         \begingroup\itshape}%
+ %%%%********************************************************************
+ \def\endfquote{%
+ \endgroup\par%
+ \makebox[0pt][l]{%
+ \hspace{0.8\textwidth}%
+ \begin{picture}(0,0)(0,0)%
+ \put(15,15){\makebox(0,0){%
+ \scalebox{3}{\color{quotemark}''}}}%
+ \end{picture}}%
+ \ifx\tempa\empty%
+ \else%
+    \ifx\tempc\empty%
+       \hfill\rule{100pt}{0.5pt}\\\mbox{}\hfill\tempa,\ \emph{\tempb}%
+   \else%
+       \hfill\rule{100pt}{0.5pt}\\\mbox{}\hfill\tempa,\ \emph{\tempb},\ \tempc%
+   \fi\fi\par%
+   \vspace{0.5em}%
+ \end{list}%
+ }%
+ \makeatother
+ %%%%********************************************************************
+ 
+ 
+ \usepackage{afterpage}
+
+\newcommand\blankpage{%
+    \null
+    \thispagestyle{empty}%
+    \addtocounter{page}{-1}%
+    \newpage}
+    
+\renewcommand{\listalgorithmcfname}{Liste des algorithmes}
+% polyglossia already loaded earlier, before biblatex
+
+\newcommand{\mychapter}[2]{
+    
+    \chapter*{#2}
+    \addcontentsline{toc}{chapter}{#2}
+}
+
+\usepackage[page,toc,titletoc,title]{appendix}
+
+\addto\captionsfrench{%
+  \renewcommand\appendixname{Annexe}
+  \renewcommand\appendixpagename{Annexes}
+  \renewcommand{\appendixtocname}{Annexes}
+}
+\usepackage{etoolbox}
+\appto\appendix{\addtocontents{toc}{\protect\setcounter{tocdepth}{0}}}
+
+% reinstate the correct level for list of tables and figures and algorithms
+\appto\listoffigures{\addtocontents{lof}{\protect\setcounter{tocdepth}{1}}}
+\appto\listoftables{\addtocontents{lot}{\protect\setcounter{tocdepth}{1}}}
+\appto\listofalgorithms{\addtocontents{loa}{\protect\setcounter{tocdepth}{1}}}
+
+
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\begin{minipage}{5cm}
+	\begin{center}
+		\includegraphics[width=5cm]{university logo.png}
+	\end{center}
+\end{minipage}\hfill
+\begin{minipage}{6cm}
+	\begin{center}
+	{\small Sultan Moulay Slimane University}\\[0.1cm]
+    {\small National School of Applied Sciences of Khouribga}\\[0.1cm]
+	\end{center}
+\end{minipage}\hfill
+\begin{minipage}{5cm}
+	\begin{center}
+		\includegraphics[width=5cm]{logo ensa.png}
+	\end{center}
+\end{minipage}\\
+\vspace{20mm}
+{\large \bfseries Final Year Project Report}\\[0.5cm]
+{\large For the degree of State Engineer}\\[0.5cm]
+{\large \bfseries{Major: Computer Engineering and Data Science} \\ }
+\vspace{10mm}
+\rule{\linewidth}{0.3mm} \\[0.4cm]
+{ \huge \bfseries Design and Development of an Intelligent Agent for Engineering Process Automation and Data Management\\[0.4cm] }
+
+\rule{\linewidth}{0.3mm} \\[1cm]
+{\large \textit{Conducted at:}}\\[0.3cm]
+\includegraphics[width=4cm]{stellantis logo.png}
+\vspace{0.5cm}
+
+\noindent
+\begin{minipage}{0.5\textwidth}
+    \vspace{-7mm}
+  \begin{flushleft} \large
+    \emph{Prepared by:}\\
+    Mrs. \textsc{Benhamida} Khadija \\
+  \end{flushleft}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+  \begin{flushright} \large
+    \begin{flushleft} \large
+    \emph{Supervised by:} \\
+    Mr. \textsc{Khalfi} Hamza (EnsaKH)\\[0.1cm]
+    Mr. \textsc{Trupcevic} Sebastien (Stellantis)\\
+    \end{flushleft}
+
+  \end{flushright}
+\end{minipage}\\[1cm]
+
+
+
+{\large Promotion : 2026/2027}
+
+\end{titlepage}
+
+\pagenumbering{Roman}
+%\include{00-Note}
+\include{01-Dedicace}
+\include{02-Remerciements}
+\include{03-Resume}
+
+\renewcommand{\cftpartleader}{\cftdotfill{\cftdotsep}} 
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+\clearpage
+\listofalgorithms
+
+\clearpage
+\include{04-Acronymes}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Content of the report and references %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\cleardoublepage
+
+\pagenumbering{arabic}
+\include{05-Introduction}
+\include{05b-Entreprise}
+\include{06-Art}
+\include{09-Conception-ENGLISH}
+\include{10-Implementation-EN}
+\include{09-Results}
+\include{10-Realisation}
+\include{10-Discussion}
+\include{11-Conclusion}
+
+%choix du style de la biblio
+
+\printbibliography[nottype=misc,title={Bibliographie}]
+ 
+\printbibliography[type=misc,title={Webographie}]
+
+
+
+
+
+\appendix
+\appendixpage
+\input{12-Annexe.tex}
+
+
+\clearpage
+\thispagestyle{empty}
+
+
+
+
+\end{document}
