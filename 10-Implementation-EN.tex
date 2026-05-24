@@ -519,40 +519,44 @@ In case the article is missing Copilot asks the user to provide the missing info
 \subsubsection{How the Update Happens}
 
 This is how LEON processes the request of an engineer asking for ‘Update the DRE for External mirrors in J4U to John Doe’:
-\begin{enumerate}
-\item \textbf{Extract the request}: Copilot NLU understands project=J4U, component=External mirrors, role=DRE, new person=John Doe
+\begingroup
+\setlength{\intextsep}{6pt}
+\setlength{\textfloatsep}{6pt}
+\captionsetup[figure]{skip=4pt}
+\begin{enumerate}[topsep=2pt,itemsep=4pt,parsep=0pt]
+    \item \textbf{Extract the request}: Copilot NLU understands project=J4U, component=External mirrors, role=DRE, new person=John Doe
 \item \textbf{Confirm the project}: If J4U is clear, proceed. If ambiguous, Copilot asks which project.
 \item \textbf{Suggest matching components}: LEON will find parts in J4U sheet in ‘Search’ window with words “External mirrors” (for example “External mirrors”, “Mirror assembly”, “Ext mirrors”). Engineer will select a proper one.
     \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{images_pfe/Component input.png}
+    \includegraphics[width=0.4\textwidth]{images_pfe/Component input.png}
     \caption{Component input: User enters partial name; system prepares suggestion list.}
     \label{fig:component-input}
 \end{figure}
 \item \textbf{Show available roles}: For J4U, available roles are DRE, Pilot, CTE. Engineer confirms: ``Yes, DRE.''
     \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{images_pfe/question role.png}
+    \includegraphics[width=0.4\textwidth]{images_pfe/question role.png}
     \caption{Role selection: User selects from available roles.}
     \label{fig:role-selection}
 \end{figure}
 \item \textbf{Confirm the change}: LEON prompts: Do you want to Update External mirrors (J4U) DRE from Jane Smith to John Doe? Yes or No
     \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{images_pfe/update name1.png}
+    \includegraphics[width=0.35\textwidth]{images_pfe/update name1.png}
     \caption{Update execution: User confirms the assignment update.}
     \label{fig:update-execution}
 \end{figure}
 \item \textbf{Make the change}: Power Automate opens the Excel file, then it locates the cell (row External mirrors and column DRE in J4U) and writes John Doe in it, saves the file, and logs that modification.
     \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{images_pfe/update name2.png}
+    \includegraphics[width=0.4\textwidth]{images_pfe/update name2.png}
     \caption{Update execution: Cell value update in Excel.}
     \label{fig:update-write}
 \end{figure}
 \item \textbf{Confirm to user}: LEON confirms: ``Done. John Doe is now DRE for External mirrors in J4U.''
 \end{enumerate}
-
+\endgroup
 \subsubsection{Error Handling}
 
 What can go wrong when updating assignments:
@@ -587,7 +591,7 @@ What can go wrong when updating assignments:
 The response given by the Responsible Assignment Update service to the Copilot Studio at every attempt to update is presented as follows (see Figure~5.14).
  \begin{figure}[H]
     \centering
-    \includegraphics[width=0.55\textwidth]{images_pfe/update name.png}
+    \includegraphics[width=0.4\textwidth]{images_pfe/update name.png}
     \caption{Update execution: Final confirmation and result to user.}
     \label{fig:update-result}
 \end{figure}
@@ -615,7 +619,7 @@ The Send Notification and Email service enables users to communicate with projec
 The email service is implemented through the following integrated components:
  \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{images_pfe/email.png}
+    \includegraphics[width=0.4\textwidth]{images_pfe/email.png}
     \caption{Email service architecture overview.}
     \label{fig:email-architecture}
 \end{figure}
@@ -632,7 +636,7 @@ The email service is implemented through the following integrated components:
 The email service accepts the following user inputs:
  \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{images_pfe/email assistant.png}
+    \includegraphics[width=0.4\textwidth]{images_pfe/email assistant.png}
     \caption{Email service architecture overview.}
     \label{fig:email-architecture}
 \end{figure}
