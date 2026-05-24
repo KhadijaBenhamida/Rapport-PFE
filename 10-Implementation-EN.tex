@@ -409,7 +409,7 @@ Project documentation on Stellantis is stored on SharePoint and organized by pro
     \item[\quad\textbullet] \textbf{GATE3}: Pre-production documents for components that are ready for manufacturing
 \end{itemize}
 
-When there are documents relating to the GATE2 Brake System, but not for the GATE3 component, the reasoning applied is that the component is in GATE2. When the GATE1 & GATE3 exist, but GATE2 is empty, the reasoning is that the component skipped GATE2, (or has an accelerated review process).
+When there are documents relating to the GATE2 Brake System, but not for the GATE3 component, the reasoning applied is that the component is in GATE2. When the GATE1 \& GATE3 exist, but GATE2 is empty, the reasoning is that the component skipped GATE2, (or has an accelerated review process).
 \vspace{0.2cm}
 
 \noindent\textbf{Understanding the Query:}
@@ -612,11 +612,18 @@ The success path explicitly includes the step that the change was made while ind
 
 \subsubsection{Objective and Scope}
 
-The Send Notification and Email service enables users to communicate with project stakeholders through structured email messages. The service supports two operational modes: (1) draft mode, where email messages are prepared for review without sending, and (2) send mode, where messages are immediately transmitted to recipients. The service integrates recipient resolution via Azure Active Directory (AAD) directory lookup, message composition via user input or predefined templates, and email transmission via the Microsoft Outlook connector. \textbf{All emails are user-generated or template-based;} the system does NOT perform autonomous message composition or AI-generated content. All email operations are logged for audit and compliance purposes.
+The Send Notification and Email service has been built in order to make communications with stakeholders a native part of the LEON governance. In an in-life situation users will be able to skip closing the Copilot chat to open the Outlook and rebuilt the project context manually.
+The service supports two explicit modes:
+\begin{itemize}
+    \item[\quad\textbullet] \textbf{Draft mode}:  LEON allows the user to compose the e-mail, and it would be saved in Outlook inbox as a draft, so the user can edit the e-mail accordingly and click send.
 
+    \item[\quad\textbullet] \textbf{Send mode}: LEON asks about the receiver, subject, message and then sends directly the email.
+\end{itemize}
+
+\noindent One essential governance constrain is maintained, the content of an e-mail is either user-generated or retrieved from approved template with variables insertion. LEON cannot generate an intent for an e-mail itself.
 \subsubsection{System Architecture}
 
-The email service is implemented through the following integrated components:
+The service is implemented through the integration shown in Figure~\ref{fig:email-architecture}:
  \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\textwidth]{images_pfe/email.png}
@@ -624,444 +631,140 @@ The email service is implemented through the following integrated components:
     \label{fig:email-architecture}
 \end{figure}
 \begin{itemize}
-    \item[\quad\textbullet] \textbf{Copilot Studio}: Conversational interface for user intent detection and message orchestration.
-    \item[\quad\textbullet] \textbf{Power Automate}: Workflow execution engine that coordinates recipient resolution, validation, and transmission.
-    \item[\quad\textbullet] \textbf{Azure Active Directory (AAD) connector}: Provides user directory search via ``Search for users (V2)'' action for recipient resolution.
-    \item[\quad\textbullet] \textbf{Microsoft Outlook connector}: Handles email transmission via [Company] mail service.
-    \item[\quad\textbullet] \textbf{Copilot audit logs}: Records all email operations for compliance and traceability.
+    \item[\quad\textbullet] \textbf{Copilot Studio}: it will gather the user intent, ask for the missing parameters and provide feedback to the execution.
+    \item[\quad\textbullet] \textbf{Power Automate}: Controls backend execution (validation, redirection, call connectors and logs).
+    \item[\quad\textbullet] \textbf{Microsoft Entra ID (AAD) connector}: uses a directory lookup to authenticate the recipient.
+    \item[\quad\textbullet] \textbf{Microsoft Outlook connector}: automatically creates emails, then it can either send emails or save them as a draft as required.
+    \item[\quad\textbullet] \textbf{Audit logs}: record the operation data for auditing purpose and traceability.
 \end{itemize}
 
 \subsubsection{Input Processing}
 
-The email service accepts the following user inputs:
+After a user has input their request in natural language like ‘draft an email to...’, ‘send a reminder to...’, the dialogue manager will translate it into contract:
  \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\textwidth]{images_pfe/email assistant.png}
-    \caption{Email service architecture overview.}
-    \label{fig:email-architecture}
+    \caption{Copilot interaction for email request capture and field completion.}
+    \label{fig:email-assistant-flow}
 \end{figure}
 \noindent\fbox{%
     \parbox{0.95\textwidth}{%
-        \textbf{User Input Parameters:}
+        \textbf{Normalized input parameters:}
         \begin{itemize}[leftmargin=0.3cm, itemsep=0.15cm]
-            \item \textbf{Operation mode}: ``draft'' or ``send''
-            \item \textbf{Recipient}: Name, email partial, or keyword for directory lookup
-            \item \textbf{Subject}: Email subject line
-            \item \textbf{Body}: Message content provided by user or selected from predefined templates
-            \item \textbf{Context (optional)}: Project, component, or assignment reference for template variable substitution
+            \item \textbf{Mode}: ``draft'' or ``send''
+            \item \textbf{Recipient}: name, email fragment or role alias
+            \item \textbf{Subject}: mandatory
+            \item \textbf{Body}: The main area which contains all the user entered data. Also includes output of templates.
+            \item \textbf{Context}: optional metadata of the project/component/gate used by the template
         \end{itemize}
     }%
 }
 
-\vspace{0.2cm}
-
-\noindent\textbf{Input Processing Steps:}
-
-\begin{enumerate}
-    \setlength{\itemsep}{0.1cm}
-    \setlength{\leftmargin}{0.5cm}
-    \item \textbf{Conversational capture}: User provides email request through Copilot Studio natural language interface. Example: ``Send an email to John Doe about component X4'', or ``Draft a message to the DRE responsible for this component.''
-    \item \textbf{Intent detection}: Copilot NLU analyzes user utterance to determine:
-    \begin{itemize}
-        \setlength{\leftmargin}{0.7cm}
-        \item Operation intent: draft or send
-        \item Recipient specification (name, keyword, or role)
-        \item Message content (subject, body, or template reference [à préciser])
-    \end{itemize}
-    \item \textbf{Validation}: System checks that required parameters (mode, recipient, subject, body) are provided. Missing inputs trigger Copilot clarification requests.
-\end{enumerate}
+\noindent 
+Processing order is fixed. Intent detection, Entity Extraction, Request missing form fields and then the execution.
 
 \subsubsection{Recipient Resolution}
 
-Recipient resolution is handled by the Power Automate ``Search for users (V2)'' action, which queries Azure Active Directory:
+Recipient resolution is done via Power Automate Search for users (V2) action over Microsoft Entra ID:
 
 \begin{enumerate}
-    \setlength{\itemsep}{0.1cm}
-    \setlength{\leftmargin}{0.5cm}
-    \item \textbf{User query input}: Recipient identifier from user (name, email partial, or keyword).
-    \item \textbf{AAD directory search}: Power Automate invokes ``Search for users (V2)'' with the user query.
-    \item \textbf{Match result processing}:
+    \item \textbf{Input}: recipient token from Copilot (name, email fragment, or role alias).
+    \item \textbf{Directory search}: Power Automate queries Entra ID.
+    \item \textbf{Decision logic}:
     \begin{itemize}
-        \setlength{\leftmargin}{0.7cm}
-        \item \textbf{Exact single match}: Recipient email address is extracted and confirmed.
-        \item \textbf{Multiple matches}: Copilot presents matching users as a selectable list; user selects the correct recipient.
-        \item \textbf{No matches}: Return \texttt{USER\_NOT\_FOUND}; Copilot requests clarification or alternative recipient specification.
+        \item \textbf{Single match}: identity is accepted and execution continues.
+        \item \textbf{Multiple matches}: The user must distinguish between several alternatives.
+        \item \textbf{No match}: The service returns USER NOT FOUND and requires more specified keyword.
     \end{itemize}
-    \item \textbf{Email extraction}: Confirmed recipient email address is extracted and passed to the execution logic.
+    \item \textbf{Output}: validated recipient identity and email address.
 \end{enumerate}
 
-\noindent This approach ensures that emails are sent to verified directory identities, reducing delivery failures and incorrect recipient issues.
+\noindent This removes free text delivery failure and enhances the likelihood of a successful delivery.
 
 \subsubsection{Execution Logic}
 
-Once recipient and message parameters are confirmed, the system executes the email operation:
+The process takes one of two well controlled paths, depending on whether the recipient and message parameters are confirmed to be valid.
 
-\vspace{0.15cm}
-
-\noindent\textbf{Case A: Draft Mode (Prepare without Send)}
+\noindent\textbf{Case A: Draft mode (draft created in Outlook and edited by the user)}
 
 \begin{enumerate}
-    \setlength{\itemsep}{0.1cm}
-    \setlength{\leftmargin}{0.5cm}
-    \item \textbf{Email composition}: System assembles email message with:
+    \item \textbf{Compose payload}: system prepares:
     \begin{itemize}
-        \setlength{\leftmargin}{0.7cm}
-        \item \texttt{to}: Recipient email address (resolved)
-        \item \texttt{subject}: Subject line from user input
-        \item \texttt{body}: Message body from user input or template [à préciser]
+        \item \texttt{to}: e-mail address to which the e-mail will be addressed 
+        \item \texttt{subject}: subject line
+        \item \texttt{body}: message body
     \end{itemize}
-    \item \textbf{No transmission}: Email draft is NOT sent; it is retained in-memory or stored in [à préciser: temporary location].
-    \item \textbf{Draft preview}: System displays email preview to user for review:
-    \begin{center}
-        \textbf{From:} [System sender] \\
-        \textbf{To:} [Recipient name] $<$[recipient@email.com]$>$ \\
-        \textbf{Subject:} [Subject line] \\
-        \rule[0.5ex]{\textwidth}{0.5pt} \\{}[Message body preview]
-    \end{center}
-    \item \textbf{User action}: User reviews draft and selects:
-    \begin{itemize}
-        \setlength{\leftmargin}{0.7cm}
-        \item ``Send'' (transitions to Case B)
-        \item ``Edit'' (return to input for modification)
-        \item ``Cancel'' (discard draft)
-    \end{itemize}
+    \item \textbf{Create draft}: Power Automate calls Outlook ``Create draft'' action.
+    \item \textbf{Return confirmation}: LEON confirms that the draft is available in Outlook.
+    \item \textbf{User control}: the user edits, sends, or discards the draft directly in Outlook.
 \end{enumerate}
 
-\vspace{0.15cm}
-
-\noindent\textbf{Case B: Send Mode (Direct Transmission)}
+\noindent\textbf{Case B: Send mode (direct sending)}
 
 \begin{enumerate}
-    \setlength{\itemsep}{0.1cm}
-    \setlength{\leftmargin}{0.5cm}
-    \item \textbf{Flow trigger}: Copilot invokes Power Automate flow ``Flow-Send-Email'' with parameters:
-    \begin{itemize}
-        \setlength{\leftmargin}{0.7cm}
-        \item \texttt{recipient\_email}: Resolved email address from AAD lookup
-        \item \texttt{subject}: Subject line
-        \item \texttt{body}: Message body
-        \item [à préciser: optional context fields for templated messages]
-    \end{itemize}
-    \item \textbf{Outlook connector invocation}: Power Automate calls Microsoft Outlook connector with email parameters.
-    \item \textbf{Transmission}: Outlook connector sends email via [Company] mail service.
-    \item \textbf{Delivery confirmation}: System receives confirmation from Outlook (success or failure status).
-    \item \textbf{Audit logging}: Email send event is logged with full context (timestamp, sender, recipient, subject, delivery status).
+    \item \textbf{Mandatory field check}: LEON requests recipient, subject, and body if missing.
+    \item \textbf{Flow trigger}: Copilot invokes ``Flow-Send-Email'' with validated fields.
+    \item \textbf{Connector call}: Power Automate calls Outlook send action.
+    \item \textbf{Result capture}: success/failure status is returned to Copilot.
+    \item \textbf{Audit logging}: operation metadata is logged (timestamp, sender, recipient, subject, status).
 \end{enumerate}
 
-\noindent \textbf{Automated Email Triggers}
+\noindent \textbf{Automated notification scenarios}
 
-In addition to user-initiated email, Power Automate flows automatically trigger emails for specific events:
+As well as the operations by the user, this same service is reused for the event driven governance communication:
 
 \begin{itemize}
-    \item[\quad\textbullet] \textbf{Responsible assignment update}: Template-based confirmation email sent to old and new responsible persons when an assignment changes.
-    \item[\quad\textbullet] \textbf{Workload assignment creation}: Template-based confirmation email sent to assigned actor with task details (component, project, hours, dates).
-    \item[\quad\textbullet] \textbf{Gate progression}: Template-based notification sent when component reaches new gate level (planned enhancement).
+    \item[\quad\textbullet] responsible assignment update confirmation,
+    \item[\quad\textbullet] notification of workload,
+    \item[\quad\textbullet] gate progression alert (planned extension).
 \end{itemize}
 
-\noindent Automated emails use predefined, static templates stored in the Copilot Studio knowledge base or SharePoint; content is populated by Power Automate using available context variables (project name, component name, actor name, dates). \textbf{No autonomous message generation is performed;} templates ensure compliance and consistency.
+\noindent The automated messages take their wording from the approved templates available in current context variables (project, component, actor, dates) that are automatically inserted, so everything is regular and matches the rules.
 
 \subsubsection{Error Handling and Fallback}
 
-The email service produces the following error conditions:
-
-\vspace{0.15cm}
+The email service returns structured errors with clear recovery actions:
 
 \begin{tabularx}{0.95\textwidth}{|l|X|}
     \hline
-    \textbf{Error Code} & \textbf{Description and Response} \\
+    \textbf{Error Code} & \textbf{Meaning and System Response} \\
     \hline
-    \texttt{USER\_NOT\_FOUND} & Recipient query does not match any AAD directory entry. Copilot requests clarification or alternative recipient name. \\
+    \texttt{USER\_NOT\_FOUND} & Recipient query does not match any directory entry. Copilot asks for recipient refinement. \\
     \hline
-    \texttt{AMBIGUOUS\_USER} & Multiple AAD users match the recipient query. Copilot presents list for user selection. \\
+    \texttt{AMBIGUOUS\_USER} & Multiple users match the query. Copilot requests explicit selection. \\
     \hline
-    \texttt{MISSING\_SUBJECT} & Subject line is empty or not provided. Copilot requests subject from user. \\
+    \texttt{MISSING\_SUBJECT} & Subject line is missing. Copilot asks for the subject. \\
     \hline
-    \texttt{MISSING\_BODY} & Message body is empty or not provided. Copilot requests message content. \\
+    \texttt{MISSING\_BODY} & Message body is missing. Copilot asks for message content. \\
     \hline
-    \texttt{INVALID\_EMAIL} & Recipient email address is malformed or invalid. System rejects and requests clarification. \\
+    \texttt{INVALID\_EMAIL} & Resolved email address is invalid. System stops and asks for correction. \\
     \hline
-    \texttt{OUTLOOK\_UNAVAILABLE} & Outlook connector is unreachable or [Company] mail service is down. Power Automate logs attempt; Copilot notifies user and suggests retry. \\
+    \texttt{OUTLOOK\_UNAVAILABLE} & Outlook connector or mail service is unavailable. Attempt is logged and user is advised to retry. \\
     \hline
-    \texttt{SEND\_FAILURE} & Email transmission fails for unspecified reason (quota, recipient blocking, network). Error details returned; Copilot escalates or suggests alternative contact method. \\
+    \texttt{SEND\_FAILURE} & Transmission fails (policy, quota, or network issue). Error details are returned with escalation guidance. \\
     \hline
-    \texttt{UNAUTHORIZED} & User lacks permission to send emails or recipient is blocked from receiving external messages. Response: ``You do not have permission to send this email.'' Copilot escalates. \\
+    \texttt{UNAUTHORIZED} & User lacks permission to send in the current context. Copilot returns a permission message and stops execution. \\
     \hline
 \end{tabularx}
 
-\vspace{0.2cm}
-
-\noindent For any error, Copilot provides user-friendly feedback with suggested next steps (retry, escalation, manual intervention).
+\noindent In case of failure it returns a user friendly message indicating the next step (retry/refine input/escalate).
 
 
 \subsubsection{Output Format}
 
-The email service returns different outputs depending on operation mode:
-
-\vspace{0.15cm}
+Output is mode-specific and designed for both usability and traceability:
 
 \begin{itemize}
-    \item[\quad\textbullet] \textbf{Draft mode output}:
-    \begin{itemize}[leftmargin=0.5cm]
-        \item Email preview displayed to user with sender, recipient, subject, and body
-        \item Action prompts: ``Send'', ``Edit'', or ``Cancel''
-        \item No email is transmitted until user confirms ``Send''
-    \end{itemize}
-    
-    \item[\quad\textbullet] \textbf{Send mode success output}:
-    \begin{itemize}[leftmargin=0.5cm]
-        \item Conversational confirmation: ``Email successfully sent to [Recipient Name] $<$[recipient@email.com]$>$ with subject '[Subject]'. Sent at [ISO-8601 timestamp].''
-        \item Audit record created automatically
-    \end{itemize}
-    
-    \item[\quad\textbullet] \textbf{Send mode error output}:
-    \begin{itemize}[leftmargin=0.5cm]
-        \item Error code and description: ``Email send failed: [ERROR\_CODE]. [Human-readable message].''
-        \item Suggested next steps: retry, escalate, or use alternative contact method
-        \item Error logged to audit trail for investigation
-    \end{itemize}
-    
-    \item[\quad\textbullet] \textbf{Automated email output}:
-    \begin{itemize}[leftmargin=0.5cm]
-        \item No user interface output; email sent silently in background
-        \item Status recorded in Power Automate flow run history
-        \item Audit entry created with ``AUTOMATED'' operation type flag
-    \end{itemize}
+    \item[\quad\textbullet] \textbf{Draft mode}: confirmation that an editable Outlook draft was created.
+    \item[\quad\textbullet] \textbf{Send success}: conversational confirmation with recipient, subject, and timestamp.
+    \item[\quad\textbullet] \textbf{Send failure}: the error code, a short description and advice on what to do.
+    \item[\quad\textbullet] \textbf{Automated notifications}: never prompt the user, full state is always maintained within flow history and audit logs.
 \end{itemize}
 
 % ─────────────────────────────────────────────────────────────────────────────
 % ═════════════════════════════════════════════════════════════════════════════
 \section{\textcolor[HTML]{0066CC}{SpecValidator Implementation}}
 % ═════════════════════════════════════════════════════════════════════════════
-\label{sec:impl-specvalidator}
-
-SpecValidator is an independent, deterministic service implemented as an Azure Function. It executes specification validation logic in isolation, ensuring reproducibility and auditability. The output is a detailed validation report (no auto-fix).
-
-\subsection{\textcolor[HTML]{003D99}{Function Architecture}}
-
-\paragraph{Technology Stack}
-
-\begin{itemize}
-    \item \textbf{Runtime} : Azure Functions (.NET 6.0 or later, C\#).
-    \item \textbf{Trigger} : HTTP trigger, invoked by Copilot Studio.
-    \item \textbf{Authentication} : AAD service-to-service (Managed Identity).
-\end{itemize}
-
-\paragraph{Function Endpoint}
-
-\begin{verbatim}
-POST /api/validate-specification
-Headers:
-  Authorization: Bearer <AAD-token>
-  Content-Type: application/json
-
-Body:
-{
-  "specificationId": "[spec-id]",
-  "projectId": "[project-id]",
-  "componentId": "[component-id]",
-  "gateLevel": "[Gate 1|Gate 2|Gate 3]",
-  "specificationContent": "<file-content or URL>",
-  "validationRuleSetId": "[rule-set-id]"
-}
-
-Response (200):
-{
-  "validationId": "[validation-id]",
-  "specificationId": "[spec-id]",
-  "timestamp": "[ISO-8601]",
-  "status": "PASS | FAIL | WARN",
-  "conformanceScore": 0.0--1.0,
-  "issues": [
-    {
-      "severity": "ERROR | WARNING | INFO",
-      "category": "[rule-category]",
-      "message": "[human-readable message]",
-      "location": "[line:col or section]"
-    }
-  ],
-  "recommendations": ["[recommendation-1]", ...],
-  "executionTime": "[milliseconds]"
-}
-\end{verbatim}
-
-\subsection{\textcolor[HTML]{003D99}{Rule Storage and Versioning}}
-
-\paragraph{Azure Blob Storage Structure}
-
-\begin{verbatim}
-/validation-rules/
-  ├── gate-1/
-  │   ├── rules-v1.0.json
-  │   ├── rules-v1.1.json
-  │   └── [current] -> rules-v1.1.json
-  ├── gate-2/
-  │   ├── rules-v1.0.json
-  │   └── [current]
-  ├── gate-3/
-  └── [templates]/
-      ├── spec-template-gate1.docx
-      ├── spec-template-gate2.docx
-\end{verbatim}
-
-\paragraph{Rule File Format (JSON)}
-
-\begin{verbatim}
-{
-  "ruleSetId": "[gate-N-rules-v1.x]",
-  "version": "1.1",
-  "lastModified": "[ISO-8601]",
-  "description": "Validation rules for Gate N",
-  "rules": [
-    {
-      "ruleId": "[rule-001]",
-      "category": "[Structure|Content|Format]",
-      "severity": "ERROR | WARNING | INFO",
-      "description": "[rule description]",
-      "pattern": "[regex or condition]",
-      "message": "[error message]"
-    }
-  ]
-}
-\end{verbatim}
-
-\subsection{\textcolor[HTML]{003D99}{Validation Pipeline}}
-
-\begin{enumerate}
-    \item \textbf{Input validation} : verify specificationId, projectId, gateLevel.
-    \item \textbf{Fetch specification} : from request body or external URL.
-    \item \textbf{Load applicable rules} : from Azure Blob Storage (based on gateLevel).
-    \item \textbf{Execute rules} : apply each rule to specification content; record violations.
-    \item \textbf{Calculate score} : (total rules - errors) / total rules.
-    \item \textbf{Generate report} : list all issues, recommendations, execution time.
-    \item \textbf{Log event} : record to Copilot audit and Power Automate.
-    \item \textbf{Return response} : JSON with all validation details.
-\end{enumerate}
-
-\paragraph{Performance}
-
-Target execution time: < 5 seconds for typical specifications.
-
-\subsection{\textcolor[HTML]{003D99}{Output: Detailed Validation Report}}
-
-\paragraph{Report Structure}
-
-\begin{table}[H]
-    \centering
-    \small
-    \caption{SpecValidator detailed validation report structure.}
-    \label{tab:impl-specvalidator-report}
-    \begin{tabularx}{\textwidth}{|l|X|}
-        \hline
-        \textbf{Field} & \textbf{Description} \\
-        \hline
-        validationId & Unique identifier for this validation run \\
-        \hline
-        specificationId & Reference to submitted specification \\
-        \hline
-        timestamp & When validation occurred \\
-        \hline
-        status & PASS / FAIL / WARN \\
-        \hline
-        conformanceScore & 0.0--1.0 percentage of rules satisfied \\
-        \hline
-        issues[].severity & ERROR / WARNING / INFO \\
-        \hline
-        issues[].message & Specific violation description \\
-        \hline
-        issues[].location & Where in specification (line, section) \\
-        \hline
-        recommendations[] & Suggested corrections or improvements \\
-        \hline
-        executionTime & Milliseconds to complete validation \\
-        \hline
-    \end{tabularx}
-\end{table}
-
-\paragraph{No Auto-Fix}
-
-SpecValidator generates detailed reports with recommendations but does \textbf{NOT} automatically modify specifications. Users review findings and make corrections manually.
-
-% ─────────────────────────────────────────────────────────────────────────────
-% ═════════════════════════════════════════════════════════════════════════════
-\section{\textcolor[HTML]{0066CC}{Cross-Cutting Concerns}}
-% ═════════════════════════════════════════════════════════════════════════════
-\label{sec:impl-crosscutting}
-
-\subsection{\textcolor[HTML]{003D99}{Access Control Enforcement}}
-
-\paragraph{Authentication}
-
-\begin{itemize}
-    \item \textcolor[HTML]{003D99}{\textbf{Copilot Studio agent}} : leverages [Company] Teams/AAD authentication.
-    \item \textcolor[HTML]{003D99}{\textbf{Power Automate flows}} : use Service Principal (Managed Identity).
-    \item \textcolor[HTML]{003D99}{\textbf{SpecValidator}} : authenticates via AAD token.
-\end{itemize}
-
-\paragraph{Authorization (RBAC)}
-
-Enforced via AAD group membership:
-
-\begin{table}[H]
-    \centering
-    \small
-    \caption{RBAC matrix for LEON operations.}
-    \label{tab:impl-rbac}
-    \begin{tabularx}{\textwidth}{|l|l|X|}
-        \hline
-        \textbf{Operation} & \textbf{Required AAD Group} & \textbf{Description} \\
-        \hline
-        View Who-is-Who & [Company]-LEON-Users & All authenticated users \\
-        \hline
-        View Gate Status & [Company]-LEON-Users & All authenticated users \\
-        \hline
-        Update Responsible & [Company]-LEON-Governance-Admin & Governance team \\
-        \hline
-        Upload Deliverable & [Company]-LEON-Users & All authenticated users \\
-        \hline
-        Manage Workload & [Company]-LEON-Resource-Manager & Resource managers \\
-        \hline
-        Invoke SpecValidator & [Company]-LEON-Users & All authenticated users \\
-        \hline
-        View Audit Log & [Company]-LEON-Auditor & Compliance/audit teams \\
-        \hline
-    \end{tabularx}
-\end{table}
-
-\subsection{\textcolor[HTML]{003D99}{Logging and Audit}}
-
-All LEON actions are logged via:
-
-\begin{enumerate}
-    \item \textcolor[HTML]{003D99}{\textbf{Copilot Studio audit logs}} : conversation history, user intents, topic flows.
-    \item \textcolor[HTML]{003D99}{\textbf{Power Automate flow runs}} : flow execution status, inputs, outputs, start/end times.
-    \item \textcolor[HTML]{003D99}{\textbf{Azure Functions logs}} : SpecValidator execution details (via Application Insights).
-\end{enumerate}
-
-\paragraph{Audit Trail Fields}
-
-\begin{itemize}
-    \item \textcolor[HTML]{003D99}{\textbf{Timestamp}} (ISO-8601)
-    \item \textcolor[HTML]{003D99}{\textbf{User identity}} (AAD OID + email)
-    \item \textcolor[HTML]{003D99}{\textbf{Action type}} (e.g., LOOKUP\_RESPONSIBLE, VALIDATE\_SPEC)
-    \item \textcolor[HTML]{003D99}{\textbf{Resource affected}} (component, gate, specification)
-    \item \textcolor[HTML]{003D99}{\textbf{Status}} (SUCCESS / FAILURE)
-    \item \textcolor[HTML]{003D99}{\textbf{Result details}} (old/new values for updates)
-    \item \textcolor[HTML]{003D99}{\textbf{Error message}} (if applicable)
-\end{itemize}
-
-\paragraph{Retention}
-
-[à préciser: retention period, e.g., 7 years for compliance]
-
-\subsection{\textcolor[HTML]{003D99}{Traceability Tags}}
-
-Every artifact is tagged for traceability:
-
-\begin{itemize}
-    \item \textbf{Specification tag} : \texttt{spec-validation-[validation-id]} links spec to validation result.
-    \item \textbf{Responsible update tag} : \texttt{responsible-change-[timestamp]} marks updates.
-    \item \textbf{Gate progression tag} : \texttt{gate-transition-[gate-id]-[timestamp]} tracks status changes.
-\end{itemize}
 
 % ─────────────────────────────────────────────────────────────────────────────
 % ═════════════════════════════════════════════════════════════════════════════
@@ -1080,17 +783,17 @@ Every artifact is tagged for traceability:
         \hline
         \textbf{Topic Name} & \textbf{User Intent} & \textbf{Triggered Flow} \\
         \hline
-        Who-is-Who Search & Find responsible party & Flow-WhoIsWho-Lookup \\
+        Who-is-Who Search & Find responsible party & Flow WhoIsWho Lookup \\
         \hline
-        Gate Status & Get gate information & Flow-Gate-Status-Retrieve \\
+        Gate Status & Get gate information & Flow Gate Status Retrieve \\
         \hline
-        Update Responsible & Modify responsible (RBAC gated) & Flow-Responsible-Update \\
+        Update Responsible & Modify responsible (RBAC gated) & Flow Responsible Update \\
         \hline
-        Upload Deliverable & Submit file to gate & Flow-Upload-to-Gate \\
+        Upload Deliverable & Submit file to gate & Flow Upload to Gate \\
         \hline
-        Workload Management & View/update assignments & Flow-Workload-View / Update \\
+        Workload Management & View/update assignments & Flow Workload View / Update \\
         \hline
-        Send Notification & Trigger email & Flow-Send-Email \\
+        Send Notification & Trigger email & Flow Send Email \\
         \hline
         Escalate & Unresolved query & Human support handoff \\
         \hline
@@ -1108,19 +811,19 @@ Every artifact is tagged for traceability:
         \hline
         \textbf{Flow Name} & \textbf{Key Actions} \\
         \hline
-        Flow-WhoIsWho-Lookup & Query [SharePoint], return responsible party \\
+        Flow WhoIsWho Lookup & Query [SharePoint], return responsible party \\
         \hline
-        Flow-Gate-Status-Retrieve & Query gate metadata, return timeline \\
+        Flow Gate Status Retrieve & Query gate metadata, return timeline \\
         \hline
-        Flow-Responsible-Update & Update [SharePoint], log audit, notify \\
+        Flow Responsible Update & Update [SharePoint], log audit, notify \\
         \hline
-        Flow-Upload-to-Gate & Create [SharePoint] path, upload file, log \\
+        Flow Upload to Gate & Create [SharePoint] path, upload file, log \\
         \hline
-        Flow-Workload-View & Query assignments, return summary \\
+        Flow Workload View & Query assignments, return summary \\
         \hline
-        Flow-Workload-Update & Insert/update assignment, log, notify \\
+        Flow Workload Update & Insert/update assignment, log, notify \\
         \hline
-        Flow-Send-Email & Send via Outlook, log delivery \\
+        Flow Send Email & Send via Outlook, log delivery \\
         \hline
     \end{tabularx}
 \end{table}
