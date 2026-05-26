@@ -420,10 +420,13 @@ For the query: “What gate is the suspension system at in J4U?”, Copilot NLU 
 The search process is straightforward:
 
 \begin{enumerate}
-    \item \textbf{Check Gate 3 first} (most advanced): Is there a file in ‘LEON Governance/J4U/GATE3/Suspension-System/’? Yes, your component is in Gate 3.
-    \item \textbf{If not, check Gate 2}: If not, then try Gate 2: Is ”/“LEON-Governance/J4U/GATE2/Suspension-System/” with documents? if yes Gate 2.
-    \item \textbf{If not, check Gate 1}: Otherwise: check Gate 1, find whether ’/LEON-Governance/J4U/GATE1/Suspension-System/’ exists in documents or not. If it exists, Gate 1.
-    \item \textbf{If nothing found}: Component not at a recorded gate. LEON tells user: ” The suspension system has not yet been formally recorded at a gate”.
+    \item \textbf{Check Gate 3 first} (most advanced):\\
+    Is there a file in \path{LEON Governance/J4U/GATE3/Suspension-System/}? Yes, your component is in Gate 3.
+    \item \textbf{If not, check Gate 2}:\\
+    If not, then try Gate 2: is \path{LEON-Governance/J4U/GATE2/Suspension-System/} populated with documents? If yes, Gate 2.
+    \item \textbf{If not, check Gate 1}:\\
+    Otherwise, check Gate 1 and determine whether \path{LEON-Governance/J4U/GATE1/Suspension-System/} exists in the document repository. If it exists, Gate 1.
+    \item \textbf{If nothing found}: Component not at a recorded gate. LEON tells the user: ``The suspension system has not yet been formally recorded at a gate.''
 \end{enumerate}
 
 \begin{figure}[H]
@@ -443,7 +446,8 @@ The service produces the following error or incomplete-result conditions:
 
 \vspace{0.15cm}
 
-\begin{tabularx}{0.95\textwidth}{|l|X|}
+\footnotesize
+\begin{tabularx}{0.95\textwidth}{|>{\raggedright\arraybackslash}p{3.2cm}|X|}
     \hline
     \textbf{What Happens} & \textbf{What LEON Does} \\
     \hline

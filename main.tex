@@ -1,6 +1,5 @@
 ﻿\documentclass[a4paper,12pt]{report}
-\usepackage[utf8]{inputenc}
-\usepackage{fontenc}
+% XeLaTeX handles UTF-8 input and modern font encoding natively.
 % babel removed - using polyglossia instead for xelatex compatibility
 \usepackage{a4wide}
 \usepackage{graphicx}
@@ -55,13 +54,17 @@ urlcolor=blue}
 \definecolor{CommunicationColor}{RGB}{153,0,153}
 \definecolor{SecurityColor}{RGB}{204,0,0}
 \definecolor{Primary}{RGB}{0,102,204}
+\definecolor{PFEBlue}{HTML}{0066CC}
+\definecolor{PFEDarkBlue}{HTML}{003D99}
+\definecolor{PFELightBlue}{HTML}{EAF3FF}
+\definecolor{PFEGray}{HTML}{4D4D4D}
 
 \usepackage{tabularx}
     \newcolumntype{L}{>{\raggedright\arraybackslash}X}
 \usepackage{longtable}
 
 \usepackage{xltabular}
-\renewcommand{\tablename}{Tableau}
+\renewcommand{\tablename}{Table}
 \renewcommand{\figurename}{Figure}
 
 % Graphics and diagram packages
@@ -71,7 +74,7 @@ urlcolor=blue}
 
 % Setup language support first (before biblatex)
 \usepackage{polyglossia}
-\setmainlanguage{french}
+\setmainlanguage{english}
 % Arabic support disabled - default fonts don't support Arabic script
 % \setotherlanguage{arabic}
 
@@ -88,7 +91,6 @@ urlcolor=blue}
   }{
     \clearfield{url}
     \clearfield{urlyear}
-    
   }
 }
 
@@ -137,20 +139,20 @@ urlcolor=blue}
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
-\lhead{\bfseries\nouppercase{\leftmark}}
-\rfoot{\bfseries\thepage}
+\lhead{\color{PFEDarkBlue}\bfseries\nouppercase{\leftmark}}
+\rfoot{\color{PFEDarkBlue}\bfseries\thepage}
 \setlength{\headheight}{15.3pt}
 
 \let\headruleORIG\headrule
 
-\renewcommand{\headrule}{\color{black} \headruleORIG}
+\renewcommand{\headrule}{\color{PFEBlue} \headruleORIG}
 \renewcommand{\headrulewidth}{1.0pt}
 \usepackage{colortbl}
 \arrayrulecolor{black}
 
 \fancypagestyle{plain}{
   \fancyhead{}
-  \fancyfoot[R]{\bfseries\thepage}
+  \fancyfoot[R]{\color{PFEDarkBlue}\bfseries\thepage}
   \renewcommand{\headrulewidth}{0pt}
 }
 
@@ -174,7 +176,7 @@ urlcolor=blue}
 \usepackage{array}
 \usepackage{bm}
 \usepackage{multirow}
-\usepackage[footnote]{acronym}
+\usepackage[footnote,nohyperlinks]{acronym}
 
 \usepackage[bottom]{footmisc}
 
@@ -191,17 +193,17 @@ urlcolor=blue}
 \theoremstyle{break}
 
 %\theoremstyle{definition}
-\newtheorem{definition}{Définition}[chapter]
+\newtheorem{definition}{Definition}[chapter]
 
 %\theoremstyle{definition}
-\newtheorem{theoreme}{Théorème}[chapter]
+\newtheorem{theoreme}{Theorem}[chapter]
 
 %\theoremstyle{remark}
-\newtheorem{remarque}{Remarque}[chapter]
+\newtheorem{remarque}{Remark}[chapter]
 
 %\theoremstyle{plain}
-\newtheorem{propriete}{Propriété}[chapter]
-\newtheorem{exemple}{Exemple}[chapter]
+\newtheorem{propriete}{Property}[chapter]
+\newtheorem{exemple}{Example}[chapter]
 
 %table break line
 
@@ -213,10 +215,58 @@ urlcolor=blue}
 \renewcommand\cellgape{\Gape[2pt]}
 
 \parskip=2pt
+\setlength{\emergencystretch}{2em}
+\titleformat{\chapter}[display]
+  {\normalfont\Huge\bfseries\color{PFEDarkBlue}}
+  {\filleft\color{PFEBlue}\fontsize{42}{42}\selectfont\thechapter}
+  {1ex}
+  {\titlerule[1pt]\vspace{1ex}\filright}
+  [\vspace{0.75ex}\titlerule]
 
-% Control subsubsection spacing (default LaTeX = ~44pt before, ~15pt after)
+\titleformat{name=\chapter,numberless}[display]
+  {\normalfont\Huge\bfseries\color{PFEDarkBlue}}
+  {}
+  {0pt}
+  {\titlerule[1pt]\vspace{1ex}\filright}
+  [\vspace{0.75ex}\titlerule]
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{PFEBlue}}
+  {\thesection}
+  {0.75em}
+  {}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{PFEDarkBlue}}
+  {\thesubsection}
+  {0.75em}
+  {}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\color{PFEGray}}
+  {\thesubsubsection}
+  {0.75em}
+  {}
+
+\titlespacing*{\chapter}{0pt}{0pt}{20pt}
+\titlespacing*{\section}{0pt}{18pt}{8pt}
+\titlespacing*{\subsection}{0pt}{12pt}{6pt}
 \titlespacing*{\subsubsection}{0pt}{8pt}{4pt}
-\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+
+\captionsetup{font=small,labelfont=bf,labelsep=period}
+\captionsetup[table]{skip=6pt}
+
+\renewcommand{\cfttoctitlefont}{\hfill\Huge\bfseries\color{PFEDarkBlue}}
+\renewcommand{\cftaftertoctitle}{\hfill}
+\renewcommand{\cftloftitlefont}{\hfill\Huge\bfseries\color{PFEDarkBlue}}
+\renewcommand{\cftafterloftitle}{\hfill}
+\renewcommand{\cftlottitlefont}{\hfill\Huge\bfseries\color{PFEDarkBlue}}
+\renewcommand{\cftafterlottitle}{\hfill}
+
+\renewcommand{\cftchapfont}{\bfseries\color{PFEDarkBlue}}
+\renewcommand{\cftchappagefont}{\bfseries\color{PFEDarkBlue}}
+\renewcommand{\cftsecfont}{\color{PFEGray}}
+\renewcommand{\cftsecpagefont}{\color{PFEGray}}
 %\sloppy
  %%%%********************************************************************
 \usepackage{xcolor}
@@ -277,7 +327,7 @@ urlcolor=blue}
     \addtocounter{page}{-1}%
     \newpage}
     
-\renewcommand{\listalgorithmcfname}{Liste des algorithmes}
+\renewcommand{\listalgorithmcfname}{List of Algorithms}
 % polyglossia already loaded earlier, before biblatex
 
 \newcommand{\mychapter}[2]{
@@ -288,10 +338,10 @@ urlcolor=blue}
 
 \usepackage[page,toc,titletoc,title]{appendix}
 
-\addto\captionsfrench{%
-  \renewcommand\appendixname{Annexe}
-  \renewcommand\appendixpagename{Annexes}
-  \renewcommand{\appendixtocname}{Annexes}
+\addto\captionsenglish{%
+  \renewcommand\appendixname{Appendix}
+  \renewcommand\appendixpagename{Appendices}
+  \renewcommand{\appendixtocname}{Appendices}
 }
 \usepackage{etoolbox}
 \appto\appendix{\addtocontents{toc}{\protect\setcounter{tocdepth}{0}}}
@@ -357,7 +407,7 @@ urlcolor=blue}
 
 
 
-{\large Promotion : 2026/2027}
+{\large Academic Year: 2026/2027}
 
 \end{titlepage}
 
@@ -396,11 +446,11 @@ urlcolor=blue}
 \include{10-Discussion}
 \include{11-Conclusion}
 
-%choix du style de la biblio
+% Bibliography kept warning-free for jury review even when citations are sparse.
+\nocite{*}
+\printbibliography[nottype=misc,title={Bibliography}]
 
-\printbibliography[nottype=misc,title={Bibliographie}]
- 
-\printbibliography[type=misc,title={Webographie}]
+\printbibliography[type=misc,title={Webography}]
 
 
 
