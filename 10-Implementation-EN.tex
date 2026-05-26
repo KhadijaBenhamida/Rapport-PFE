@@ -711,15 +711,15 @@ The process takes one of two well controlled paths, depending on whether the rec
 
 \noindent \textbf{Automated notification scenarios}
 
-As well as the operations by the user, this same service is reused for the event driven governance communication:
+Beyond the user operations the service is being reused in the event driven governance communication :
 
 \begin{itemize}
-    \item[\quad\textbullet] responsible assignment update confirmation,
-    \item[\quad\textbullet] notification of workload,
-    \item[\quad\textbullet] gate progression alert (planned extension).
+    \item[\quad\textbullet] responsible assignment update and confirmation,
+    \item[\quad\textbullet] notification about the workload,
+    \item[\quad\textbullet] gate advancement warning (scheduled extension).
 \end{itemize}
 
-\noindent The automated messages take their wording from the approved templates available in current context variables (project, component, actor, dates) that are automatically inserted, so everything is regular and matches the rules.
+\noindent Automated mails reuse only the templates texts defined into the current context variables (project, component, actor, dates) automatically set in, so everything remains common and coherent.
 
 \subsubsection{Error Handling and Fallback}
 
@@ -729,19 +729,19 @@ The email service returns structured errors with clear recovery actions:
     \hline
     \textbf{Error Code} & \textbf{Meaning and System Response} \\
     \hline
-    \texttt{USER\_NOT\_FOUND} & Recipient query does not match any directory entry. Copilot asks for recipient refinement. \\
+    \texttt{USER NOT FOUND} & Recipient query does not match any directory entry. Copilot asks for recipient refinement. \\
     \hline
-    \texttt{AMBIGUOUS\_USER} & Multiple users match the query. Copilot requests explicit selection. \\
+    \texttt{AMBIGUOUS USER} & Multiple users match the query. Copilot requests explicit selection. \\
     \hline
-    \texttt{MISSING\_SUBJECT} & Subject line is missing. Copilot asks for the subject. \\
+    \texttt{MISSING SUBJECT} & Subject line is missing. Copilot asks for the subject. \\
     \hline
-    \texttt{MISSING\_BODY} & Message body is missing. Copilot asks for message content. \\
+    \texttt{MISSING BODY} & Message body is missing. Copilot asks for message content. \\
     \hline
-    \texttt{INVALID\_EMAIL} & Resolved email address is invalid. System stops and asks for correction. \\
+    \texttt{INVALID EMAIL} & Resolved email address is invalid. System stops and asks for correction. \\
     \hline
-    \texttt{OUTLOOK\_UNAVAILABLE} & Outlook connector or mail service is unavailable. Attempt is logged and user is advised to retry. \\
+    \texttt{OUTLOOK UNAVAILABLE} & Outlook connector or mail service is unavailable. Attempt is logged and user is advised to retry. \\
     \hline
-    \texttt{SEND\_FAILURE} & Transmission fails (policy, quota, or network issue). Error details are returned with escalation guidance. \\
+    \texttt{SEND FAILURE} & Transmission fails (policy, quota, or network issue). Error details are returned with escalation guidance. \\
     \hline
     \texttt{UNAUTHORIZED} & User lacks permission to send in the current context. Copilot returns a permission message and stops execution. \\
     \hline
@@ -755,10 +755,10 @@ The email service returns structured errors with clear recovery actions:
 Output is mode-specific and designed for both usability and traceability:
 
 \begin{itemize}
-    \item[\quad\textbullet] \textbf{Draft mode}: confirmation that an editable Outlook draft was created.
-    \item[\quad\textbullet] \textbf{Send success}: conversational confirmation with recipient, subject, and timestamp.
-    \item[\quad\textbullet] \textbf{Send failure}: the error code, a short description and advice on what to do.
-    \item[\quad\textbullet] \textbf{Automated notifications}: never prompt the user, full state is always maintained within flow history and audit logs.
+    \item[\quad\textbullet] \textbf{Draft mode}: a test verifying that an editable Outlook draft was indeed created.
+    \item[\quad\textbullet] \textbf{Send success}: interactive response to sender confirming message was received (to, time, from).
+    \item[\quad\textbullet] \textbf{Send failure}: error message containing an error code, a brief description and a piece of instructions.
+    \item[\quad\textbullet] \textbf{Automated notifications}: no user prompting, the state is always fully available within the flow history and audit trail.
 \end{itemize}
 
 % ─────────────────────────────────────────────────────────────────────────────
@@ -770,235 +770,9 @@ Output is mode-specific and designed for both usability and traceability:
 % ═════════════════════════════════════════════════════════════════════════════
 \section{\textcolor[HTML]{0066CC}{Summary of Implemented Artifacts}}
 % ═════════════════════════════════════════════════════════════════════════════
-\label{sec:impl-summary}
 
-\subsection{\textcolor[HTML]{003D99}{Copilot Studio Topics}}
-
-\begin{table}[H]
-    \centering
-    \small
-    \caption{Summary of Copilot Studio topics and associated flows.}
-    \label{tab:impl-topics}
-    \begin{tabularx}{\textwidth}{|l|X|l|}
-        \hline
-        \textbf{Topic Name} & \textbf{User Intent} & \textbf{Triggered Flow} \\
-        \hline
-        Who-is-Who Search & Find responsible party & Flow WhoIsWho Lookup \\
-        \hline
-        Gate Status & Get gate information & Flow Gate Status Retrieve \\
-        \hline
-        Update Responsible & Modify responsible (RBAC gated) & Flow Responsible Update \\
-        \hline
-        Upload Deliverable & Submit file to gate & Flow Upload to Gate \\
-        \hline
-        Workload Management & View/update assignments & Flow Workload View / Update \\
-        \hline
-        Send Notification & Trigger email & Flow Send Email \\
-        \hline
-        Escalate & Unresolved query & Human support handoff \\
-        \hline
-    \end{tabularx}
-\end{table}
-
-\subsection{\textcolor[HTML]{003D99}{Power Automate Flows (6--7 Primary)}}
-
-\begin{table}[H]
-    \centering
-    \small
-    \caption{Summary of primary Power Automate workflows.}
-    \label{tab:impl-pa-flows}
-    \begin{tabularx}{\textwidth}{|l|X|}
-        \hline
-        \textbf{Flow Name} & \textbf{Key Actions} \\
-        \hline
-        Flow WhoIsWho Lookup & Query [SharePoint], return responsible party \\
-        \hline
-        Flow Gate Status Retrieve & Query gate metadata, return timeline \\
-        \hline
-        Flow Responsible Update & Update [SharePoint], log audit, notify \\
-        \hline
-        Flow Upload to Gate & Create [SharePoint] path, upload file, log \\
-        \hline
-        Flow Workload View & Query assignments, return summary \\
-        \hline
-        Flow Workload Update & Insert/update assignment, log, notify \\
-        \hline
-        Flow Send Email & Send via Outlook, log delivery \\
-        \hline
-    \end{tabularx}
-\end{table}
-
-\subsection{\textcolor[HTML]{003D99}{SpecValidator Configuration}}
-
-\begin{itemize}
-    \item \textbf{Function App} : \texttt{[Company]-SpecValidator-Func}
-    \item \textbf{Function} : \texttt{ValidateSpecification} (HTTP-triggered)
-    \item \textbf{Runtime} : .NET 6.0, C\#
-    \item \textbf{Managed Identity} : enabled for Azure Blob Storage and audit logging
-    \item \textbf{Application Settings} :
-    \begin{itemize}
-        \item \texttt{AzureStorageConnectionString} : Blob Storage for rule files
-        \item \texttt{RuleCacheTTL} : [à préciser: cache duration, e.g., 3600 seconds]
-    \end{itemize}
-\end{itemize}
-
-\subsection{\textcolor[HTML]{003D99}{5.6.4 Validation Rule Sets (Azure Blob Storage)}}
-
-\begin{itemize}
-    \item \textbf{Gate 1 rules} : v1.1 (current) - [à préciser: number of rules]
-    \item \textbf{Gate 2 rules} : v1.0 (current) - [à préciser: number of rules]
-    \item \textbf{Gate 3 rules} : v1.0 (current) - [à préciser: number of rules]
-    \item \textbf{Specification templates} : stored for reference per gate level
-\end{itemize}
-
-\subsection{\textcolor[HTML]{003D99}{5.6.5 Copilot Studio Knowledge Base}}
-
-\begin{itemize}
-    \item \textbf{Structure} : Unified knowledge base housing all dataset files and connectors for LEON.
-    \item \textbf{Who-is-Who dataset} : Excel file uploaded to KB with responsible party mappings (columns: [Project], [Component], [Responsible Name], [Responsible Email], [Role]).
-    \item \textbf{Gate metadata} : Excel file in KB with gate timelines, owners, status, entry/exit dates.
-    \item \textbf{Workload assignments} : Excel file in KB with task assignments, hours, deadlines.
-    \item \textbf{Validation guidelines} : Word document (uploaded to KB) describing acceptance criteria per gate level.
-    \item \textbf{[SharePoint] connectors} : real-time live connectors to [SharePoint] lists for current data; KB serves as cached reference for faster queries.
-    \item \textbf{Update frequency} : [à préciser: daily, weekly, or on-demand manual sync from [SharePoint] to KB?]
-\end{itemize}
-
-
-
-% ─────────────────────────────────────────────────────────────────────────────
-% ═════════════════════════════════════════════════════════════════════════════
-\section{\textcolor[HTML]{0066CC}{Testing and Validation Approach}}
-% ═════════════════════════════════════════════════════════════════════════════
-\label{sec:impl-testing}
-
-\subsection{\textcolor[HTML]{003D99}{5.7.1 Copilot Studio Prompt-Based Testing}}
-
-Testing was conducted by executing test prompts directly in Copilot Studio and validating the information flow through topics and Power Automate flows.
-
-\paragraph{Test Methodology}
-
-\begin{enumerate}
-    \item \textbf{Prompt design} : craft natural language test scenarios representing each use case.
-    \item \textbf{Execution} : submit prompts to Copilot agent in Test environment.
-    \item \textbf{Observation} : monitor topic activation, flow triggering, inputs/outputs.
-    \item \textbf{Validation} : verify correct data retrieval, transformations, and response generation.
-    \item \textbf{Logging} : review Copilot logs and Power Automate flow runs to trace execution path.
-\end{enumerate}
-
-\paragraph{Test Coverage}
-
-Beta testing was conducted with approximately 15 users from the mechatronics and governance teams. Testers executed natural language prompts across all major use cases (Who-is-Who lookup, Gate status, Upload, Workload, SpecValidator) and provided feedback on conversational quality, information accuracy, and flow execution. Detailed feedback notes were collected and reviewed post-testing.
-
-Test scenarios include:
-
-\begin{enumerate}
-    \item \textcolor[HTML]{003D99}{\textbf{Who-is-Who lookup}} : valid and invalid component/project combinations.
-    \item \textcolor[HTML]{003D99}{\textbf{Gate status retrieval}} : existing and non-existent gates.
-    \item \textcolor[HTML]{003D99}{\textbf{Responsible update}} : authorized and unauthorized users.
-    \item \textcolor[HTML]{003D99}{\textbf{File upload}} : valid and invalid file formats [à préciser: which formats?].
-    \item \textcolor[HTML]{003D99}{\textbf{Workload management}} : view and update operations.
-    \item \textcolor[HTML]{003D99}{\textbf{SpecValidator invocation}} : passing and failing specifications.
-    \item \textcolor[HTML]{003D99}{\textbf{Error scenarios}} : missing data, service unavailability, malformed input.
-\end{enumerate}
-
-\subsection{\textcolor[HTML]{003D99}{5.7.2 Traceability: Testing to Strategic Objectives}}
-
-Testing aligned with strategic objectives:
-
-\begin{table}[H]
-    \centering
-    \small
-    \caption{Test scenarios mapped to strategic objectives.}
-    \label{tab:impl-test-mapping}
-    \begin{tabularx}{\textwidth}{|l|l|c|}
-        \hline
-        \textbf{SO} & \textbf{Test Scenario Type} & \textbf{Covered?} \\
-        \hline
-        SO1 & Conversational intent → topic → flow execution & [à préciser: Yes/No] \\
-        \hline
-        SO2 & Who-is-Who lookup accuracy and performance & [à préciser: Yes/No] \\
-        \hline
-        SO3 & Gate status retrieval and live updates & [à préciser: Yes/No] \\
-        \hline
-        SO4 & SpecValidator determinism and report quality & [à préciser: Yes/No] \\
-        \hline
-        SO5 & Audit trail completeness and accessibility & [à préciser: Yes/No] \\
-        \hline
-    \end{tabularx}
-\end{table}
-
-\subsection{\textcolor[HTML]{003D99}{5.7.3 Known Limitations and Future Work}}
-
-\begin{enumerate}
-    \item \textcolor[HTML]{003D99}{\textbf{Knowledge base synchronization lag}} : Copilot KB is a cached copy of [SharePoint] data. Updates to Who-is-Who or Gate metadata in [SharePoint] may take [à préciser: e.g., 1--4 hours] to reflect in the KB. For time-critical queries, Power Automate flows query [SharePoint] directly to fetch live data, mitigating this delay for most use cases. Future: implement automated KB refresh triggers.
-    \item \textcolor[HTML]{003D99}{\textbf{Natural language understanding edge cases}} : Some user queries with ambiguous phrasing or typos may not be recognized by Copilot NLU, causing topic mismatch or escalation to human support. Mitigation: ongoing training of NLU model with real user interactions; escalation workflow ensures queries are not lost.
-    \item \textcolor[HTML]{003D99}{\textbf{File upload format enforcement}} : While the system accepts Excel and Word files, very large files (>50 MB) or corrupted files may cause upload failures. Future: implement pre-upload validation and file compression.
-    \item \textcolor[HTML]{003D99}{\textbf{SpecValidator rule versioning}} : Rule updates in Azure Blob Storage require manual version management. No automated rollback if a new rule set introduces false positives. Future: implement A/B testing framework for rule sets before promoting to production.
-    \item \textcolor[HTML]{003D99}{\textbf{Audit log retention policy}} : [à préciser: Define retention period (e.g., 7 years for compliance). Implement automated archival to cold storage after retention threshold.]
-\end{enumerate}
 
 % ─────────────────────────────────────────────────────────────────────────────
 % ═════════════════════════════════════════════════════════════════════════════
 \section{\textcolor[HTML]{0066CC}{Deployment and Change Management}}
 % ═════════════════════════════════════════════════════════════════════════════
-\label{sec:impl-deployment}
-
-\subsection{\textcolor[HTML]{003D99}{5.8.1 Deployment Timeline}}
-
-\begin{table}[H]
-    \centering
-    \small
-    \caption{Deployment phases and timeline.}
-    \label{tab:impl-deployment-phases}
-    \begin{tabularx}{\textwidth}{|l|X|X|}
-        \hline
-        \textbf{Phase} & \textbf{Scope} & \textbf{Date / Status} \\
-        \hline
-        Development (Dev) & Prototype and configuration & [à préciser] \\
-        \hline
-        Testing (Test) & UAT and scenario validation & [à préciser] \\
-        \hline
-        Pilot (Prod) & [à préciser: e.g., 2 projects, 50 users] & [à préciser] \\
-        \hline
-        Full Rollout (Prod) & All projects and users & [à préciser] \\
-        \hline
-    \end{tabularx}
-\end{table}
-
-\subsection{\textcolor[HTML]{003D99}{5.8.2 User Training and Support}}
-
-\begin{itemize}
-    \item \textcolor[HTML]{003D99}{\textbf{Training materials}} : [à préciser: documentation, video, live sessions?]
-    \item \textcolor[HTML]{003D99}{\textbf{Support channel}} : [Company]-LEON-Support team or [à préciser: helpdesk ticket queue?]
-    \item \textcolor[HTML]{003D99}{\textbf{Post-deployment monitoring}} : [à préciser: metrics, SLA, escalation process?]
-\end{itemize}
-
-% ─────────────────────────────────────────────────────────────────────────────
-% ═════════════════════════════════════════════════════════════════════════════
-\section{\textcolor[HTML]{0066CC}{Chapter Conclusion}}
-% ═════════════════════════════════════════════════════════════════════════════
-\label{sec:impl-conclusion}
-
-The implementation of LEON realizes the design architecture through a modular, cloud-native approach grounded in Copilot Studio's topic-based orchestration. The integration of conversational AI, Power Automate workflows, and deterministic validation services creates a flexible yet compliant governance platform.
-
-Key achievements:
-
-\begin{enumerate}
-    \item \textcolor[HTML]{003D99}{\textbf{Conversational accessibility}} : users interact naturally with governance data via Copilot topics.
-    \item \textcolor[HTML]{003D99}{\textbf{Modular design}} : governance services decoupled through Power Automate flows and reusable topics.
-    \item \textcolor[HTML]{003D99}{\textbf{Deterministic validation}} : SpecValidator operates independently, ensuring reproducible and auditable results.
-    \item \textcolor[HTML]{003D99}{\textbf{Multi-environment support}} : Dev, Test, and Production environments enable safe rollout and iteration.
-    \item \textcolor[HTML]{003D99}{\textbf{Complete audit trail}} : all actions logged via Copilot Studio, Power Automate, and Azure Functions, enabling compliance verification.
-\end{enumerate}
-
-The validation approach—prompt-based testing within Copilot Studio—directly verifies the conversational experience and information flow, ensuring fidelity to the design specification.
-
-% ═════════════════════════════════════════════════════════════════════════════
-
-
-
-
-
-
-
-
