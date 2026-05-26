@@ -195,14 +195,18 @@ This section details how five governance services function: how topics route con
 \subsection{\textcolor[HTML]{003D99}{Copilot Studio Topics and Conversation Design}}
 \label{sec:impl-topics}
 
-\subsubsection{Topic Architecture}
+\subsubsection{\textcolor[HTML]{0066CC}{Topic Architecture}}
 
 Topics are the core orchestration mechanism in Copilot Studio. Each governance service is mapped to one or more topics:
 
-\begin{center}
+\begin{table}[H]
+\centering
+\small
+\caption{Topic architecture for Copilot Studio governance services.}
+\label{tab:copilot-topic-architecture}
 \begin{tabularx}{0.95\textwidth}{|l|X|X|}
     \hline
-    \textbf{Topic} & \textbf{User Query} & \textbf{Associated Functions} \\
+    \rowcolor[HTML]{E6F2FF}\textcolor[HTML]{003D99}{\textbf{Topic}} & \textcolor[HTML]{003D99}{\textbf{User Query}} & \textcolor[HTML]{003D99}{\textbf{Associated Functions}} \\
     \hline
     \textbf{Who-is-Who Search} & ``Who is responsible for component [Component]?'' & Lookup flow trigger \\
     \hline
@@ -219,9 +223,9 @@ Topics are the core orchestration mechanism in Copilot Studio. Each governance s
     \textbf{Escalate} & Unresolved queries & Human support team escalation \\
     \hline
 \end{tabularx}
-\end{center}
+\end{table}
 
-\subsubsection{Knowledge Base Integration}
+\subsubsection{\textcolor[HTML]{0066CC}{Knowledge Base Integration}}
 
 The Copilot Studio knowledge base organizes governance data into structured repositories:
 
@@ -237,10 +241,10 @@ The Copilot Studio knowledge base organizes governance data into structured repo
 \subsection{\textcolor[HTML]{003D99}{Implementation: Who-is-Who Responsible Lookup}}
 \label{sec:impl-whoiswho}
 
-\subsubsection{Objective and Scope}
+\subsubsection{\textcolor[HTML]{0066CC}{Objective and Scope}}
 
 The Who-is-Who responsible lookup service can be used by the user to discover the person accountable for a component within a project using query (via excel) into the governance data source. This can be triggered conversationaly through Copilot studio by using Power Automate flows and will provide an accountable person identifier or an error code (managed through conversational invocation) as output.
-\subsubsection{Where the Data Lives}
+\subsubsection{\textcolor[HTML]{0066CC}{Where the Data Lives}}
 
 LEON counts on Stellantis governance teams which used to be responsible for mapping component responsibility in Excel. Therefore, instead of building up a database, LEON is just linked to the excel on SharePoint. This implies that:
 \begin{itemize}
@@ -277,7 +281,7 @@ LEON counts on Stellantis governance teams which used to be responsible for mapp
 
 
 
-\subsubsection{How the Lookup Works: A Real Example}
+\subsubsection{\textcolor[HTML]{0066CC}{How the Lookup Works: A Real Example}}
 
 An engineer may ask (e.g. ” DRE of brake system for the J4U project ? ”). The answer LEON gives :
 
@@ -298,7 +302,7 @@ An engineer may ask (e.g. ” DRE of brake system for the J4U project ? ”). Th
 
 \textbf{Why this design matters:} Engineers doesn‘t need to provide the exact string in Excel because there is a phase of normalization (case insensitive, trimming leading and trailing spaces) that handles all inputs of the users. The tolerance is good for user as there is less confusion and less question.
 
-\subsubsection{Handling Project Name Ambiguity}
+\subsubsection{\textcolor[HTML]{0066CC}{Handling Project Name Ambiguity}}
 
 Not all of the users and enginners remembers the exact project codes or names. While testing the pilot program we had discover that:
 
@@ -316,7 +320,7 @@ LEON converts the user input to lower case and compares it with the names of the
 \textbf{Step 2: Similarity Fallback}  
 Similarity fallback if there are no exact matches, we are looking for partial matches. The engineer who gives “the automotive project four” to the system, will not be able to find the “J4U” name. We don‘t want to filter the engineer but assist him. Copilot, using NLU, will search and provide him the closest matching name and will suggest it by asking him: “did you mean the J4U project ?” to prevent any potential escalation.
 
-\subsubsection{Finding the Right Cell}
+\subsubsection{\textcolor[HTML]{0066CC}{Finding the Right Cell}}
 
 Upon approval of the project sheet, LEON attempts to find the component and the role in it. This step might seem straightforward at first, but has some practical drawbacks:
 
@@ -327,15 +331,20 @@ Upon approval of the project sheet, LEON attempts to find the component and the 
 \item \textbf{Multiple responsibilities:} There are situations where one cell is responsible for more than one individual; such as “Jane Smith / John Doe”. LEON presents back the two individuals to the user.
 \end{itemize}
 
-\subsubsection{Error Handling and Fallback}
+\subsubsection{\textcolor[HTML]{0066CC}{Error Handling and Fallback}}
 
 \noindent The service produces the following error conditions:
 
 \vspace{0.15cm}
 
+\begin{table}[H]
+\centering
+\small
+\caption{Error conditions for the Who-is-Who responsible lookup service.}
+\label{tab:whoiswho-errors}
 \begin{tabularx}{0.95\textwidth}{|l|X|}
     \hline
-    \textbf{Error} & \textbf{What Went Wrong} \\
+    \rowcolor[HTML]{E6F2FF}\textcolor[HTML]{003D99}{\textbf{Error}} & \textcolor[HTML]{003D99}{\textbf{What Went Wrong}} \\
     \hline
     \texttt{PROJECT NOT FOUND} & User said a project name that doesn't exist. Copilot suggests available projects. \\
     \hline
@@ -350,12 +359,12 @@ Upon approval of the project sheet, LEON attempts to find the component and the 
     \texttt{UNAUTHORIZED} & User lacks permission to read that project. Security enforced at Excel level. \\
     \hline
 \end{tabularx}
+\end{table}
 
 
 
 
-
-\subsubsection{Output Format}
+\subsubsection{\textcolor[HTML]{0066CC}{Output Format}}
 
 Who-is-Who lookup is showing one of the outcomes only, it depends upon execution.
 
@@ -375,7 +384,7 @@ Who-is-Who lookup is showing one of the outcomes only, it depends upon execution
 \subsection{\textcolor[HTML]{003D99}{Implementation: Gate Status Retrieval}}
 \label{sec:impl-gatestatus}
 
-\subsubsection{Why Gate Status Matters}
+\subsubsection{\textcolor[HTML]{0066CC}{Why Gate Status Matters}}
 
 The development process of an automotive product involves gates : Gate 1 for concept, Gate 2 for detail design, Gate 3 for pre-production. The engineers will want to know: ” Has the brake system reached Gate 2 ? ”. This then determines the relevant design reviews that are needed.
 
@@ -383,7 +392,7 @@ While Who is Who is nothing more than a lookup on an excel table, gate status is
 
 \textbf{Why this approach?} The gates are a governance mark used by Stellantis. we are reading files, so we would not be inventing a new system to be updated if metadata were separated from the other parts of information. The guess is that gate 3 is skipped or served much more rapidly if gate 3 is present in the catalog but not gate 2.
 
-\subsubsection{Data Source}
+\subsubsection{\textcolor[HTML]{0066CC}{Data Source}}
 
 The status of a gate is inferred via a knowledge structure in the documents with three gate levels:
 
@@ -400,7 +409,7 @@ The status of a gate is inferred via a knowledge structure in the documents with
     \item[\quad\textbullet] \textbf{GATE3}: Knowledge source/folder contains documents associated with Gate 3 deliverables.
 \end{itemize}
 
-\subsubsection{How Documents Signal Gate Progress}
+\subsubsection{\textcolor[HTML]{0066CC}{How Documents Signal Gate Progress}}
 
 Project documentation on Stellantis is stored on SharePoint and organized by project, then by gate. Upon the brake system reaching Gate 2, the specification is placed on ”/LEONGovernance/J4U/GATE2/Brake-System/”. LEON is responsible for identifying which gate folders the component specification shall be forwarded:
 \begin{itemize}
@@ -415,7 +424,7 @@ When there are documents relating to the GATE2 Brake System, but not for the GAT
 \noindent\textbf{Understanding the Query:}
 
 For the query: “What gate is the suspension system at in J4U?”, Copilot NLU would return: project = J4U, component = suspension system. Both would be normalized to, say: “j4u” normalized to “J4U”, “suspension system”, and “suspension subsystem”. Using case insensitive prefix matching and substring search the parser can map all those strings appropriately.
-\subsubsection{How LEON Finds the Gate}
+\subsubsection{\textcolor[HTML]{0066CC}{How LEON Finds the Gate}}
 
 The search process is straightforward:
 
@@ -440,16 +449,20 @@ The search process is straightforward:
 
 This document outlines the detection method that will be based on asserting that gate status is representative of the knowledge bases uploaded objects and stored objects that have not activated some other attribute to denote metadata.
 
-\subsubsection{Error Handling and Fallback}
+\subsubsection{\textcolor[HTML]{0066CC}{Error Handling and Fallback}}
 
 The service produces the following error or incomplete-result conditions:
 
 \vspace{0.15cm}
 
+\begin{table}[H]
+\centering
 \footnotesize
+\caption{Error and incomplete-result conditions for gate status retrieval.}
+\label{tab:gate-status-errors}
 \begin{tabularx}{0.95\textwidth}{|>{\raggedright\arraybackslash}p{3.2cm}|X|}
     \hline
-    \textbf{What Happens} & \textbf{What LEON Does} \\
+    \rowcolor[HTML]{E6F2FF}\textcolor[HTML]{003D99}{\textbf{What Happens}} & \textcolor[HTML]{003D99}{\textbf{What LEON Does}} \\
     \hline
     \texttt{PROJECT NOT FOUND} & Project doesn't exist in documents. LEON suggests alternatives: ``Did you mean J4U or SP1-P1H?'' \\
     \hline
@@ -462,12 +475,13 @@ The service produces the following error or incomplete-result conditions:
     \texttt{AMBIGUOUS MATCH} & Multiple documents with similar names (e.g., brake-system-v1, brake-system-final). LEON asks user to clarify which one. \\
     \hline
 \end{tabularx}
+\end{table}
 
 \vspace{0.2cm}
 
 \noindent For any error condition, Copilot Studio routes to fallback topic (Escalate) or requests user clarification.
 
-\subsubsection{Output Format}
+\subsubsection{\textcolor[HTML]{0066CC}{Output Format}}
 
 The Gate Status service returns a conversational response indicating:
 
@@ -495,19 +509,19 @@ A further functionality that is under development and that allows the user to up
 \subsection{\textcolor[HTML]{003D99}{Implementation: Responsible Assignment Update}}
 \label{sec:impl-responsible-update}
 
-\subsubsection{When Responsibilities Change}
+\subsubsection{\textcolor[HTML]{0066CC}{When Responsibilities Change}}
 
 Product development teams evolve. When a responsible moves to a new role, a new responsible takes over as his role for a specific componenet. When a design review is assigned to a new engineer, that person’s name needs to appear in the governance record.
 
 Instead of Governance teams updating themselves in excel: find sheet, row, and column, added new name, saved file, e-mailed. With LEON: Updated the DRE for dashboard component in J4U to Sarah Chen and updated right away. It also logs who and when made the update, and what the change actually was, useful for auditable history of development.
 
-\subsubsection{Where Updates Happen}
+\subsubsection{\textcolor[HTML]{0066CC}{Where Updates Happen}}
 
 Updates are made to the same Excel file where Who-is-Who queries to. File has one sheet per project (J4U, SP1-P1H) where each component is a row and in each role we have a column. Updating DRE for the brake system to Sarah Chen, it means we update one cell in the J4U excel file, in the row brake system and in the column DRE. LEON is doing it via Power Automate excel connector, which has complete write permissions to the shared governance file.
 
 \textbf{Why this matters:} All this information is readily available from the governance groups. We are not building yet another place to try and keep in sync. Updates to LEON are visible immediately when you open the Excel, and if a governance engineer makes a change directly into the Excel it will show up in the following query.
 
-\subsubsection{What Information LEON Needs}
+\subsubsection{\textcolor[HTML]{0066CC}{What Information LEON Needs}}
 
 To make an update for the name of a responsible in a project, LEON needs four pieces of information:
 
@@ -520,7 +534,7 @@ To make an update for the name of a responsible in a project, LEON needs four pi
 
 In case the article is missing Copilot asks the user to provide the missing information. Similarly to the Who-is-Who service LEON is not sensitive to format.
 
-\subsubsection{How the Update Happens}
+\subsubsection{\textcolor[HTML]{0066CC}{How the Update Happens}}
 
 This is how LEON processes the request of an engineer asking for ‘Update the DRE for External mirrors in J4U to John Doe’:
 \begingroup
@@ -561,15 +575,20 @@ This is how LEON processes the request of an engineer asking for ‘Update the D
 \item \textbf{Confirm to user}: LEON confirms: ``Done. John Doe is now DRE for External mirrors in J4U.''
 \end{enumerate}
 \endgroup
-\subsubsection{Error Handling}
+\subsubsection{\textcolor[HTML]{0066CC}{Error Handling}}
 
 What can go wrong when updating assignments:
 
 \vspace{0.15cm}
 
+\begin{table}[H]
+\centering
+\small
+\caption{Error conditions for responsible assignment updates.}
+\label{tab:responsible-update-errors}
 \begin{tabularx}{0.95\textwidth}{|l|X|}
     \hline
-    \textbf{What Happens} & \textbf{What LEON Does} \\
+    \rowcolor[HTML]{E6F2FF}\textcolor[HTML]{003D99}{\textbf{What Happens}} & \textcolor[HTML]{003D99}{\textbf{What LEON Does}} \\
     \hline
     \texttt{PROJECT NOT FOUND} & Project name doesn't match any sheet. LEON suggests available projects. \\
     \hline
@@ -586,11 +605,12 @@ What can go wrong when updating assignments:
     \texttt{WRITE FAILURE} & Excel write fails (file locked, quota exceeded). LEON escalates: Update failed. Contact IT. \\
     \hline
 \end{tabularx}
+\end{table}
 
 \vspace{0.2cm}
 
 
-\subsubsection{Output Format}
+\subsubsection{\textcolor[HTML]{0066CC}{Output Format}}
 
 The response given by the Responsible Assignment Update service to the Copilot Studio at every attempt to update is presented as follows (see Figure~5.14).
  \begin{figure}[H]
@@ -725,13 +745,18 @@ Beyond the user operations the service is being reused in the event driven gover
 
 \noindent Automated mails reuse only the templates texts defined into the current context variables (project, component, actor, dates) automatically set in, so everything remains common and coherent.
 
-\subsubsection{Error Handling and Fallback}
+\subsubsection{\textcolor[HTML]{0066CC}{Error Handling and Fallback}}
 
 The email service returns structured errors with clear recovery actions:
 
+\begin{table}[H]
+\centering
+\small
+\caption{Error conditions for the email notification service.}
+\label{tab:email-service-errors}
 \begin{tabularx}{0.95\textwidth}{|l|X|}
     \hline
-    \textbf{Error Code} & \textbf{Meaning and System Response} \\
+    \rowcolor[HTML]{E6F2FF}\textcolor[HTML]{003D99}{\textbf{Error Code}} & \textcolor[HTML]{003D99}{\textbf{Meaning and System Response}} \\
     \hline
     \texttt{USER NOT FOUND} & Recipient query does not match any directory entry. Copilot asks for recipient refinement. \\
     \hline
@@ -750,6 +775,7 @@ The email service returns structured errors with clear recovery actions:
     \texttt{UNAUTHORIZED} & User lacks permission to send in the current context. Copilot returns a permission message and stops execution. \\
     \hline
 \end{tabularx}
+\end{table}
 
 \noindent In case of failure it returns a user friendly message indicating the next step (retry/refine input/escalate).
 

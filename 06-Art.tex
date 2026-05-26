@@ -58,7 +58,7 @@ Generative AI employs all methods and models that generate original content text
 \begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.75\textwidth]{images_pfe/GenAI.jpg}
-  \caption{Concept of Generative Artificial Intelligence.}s
+  \caption{Concept of Generative Artificial Intelligence.}
   \label{fig:concept_generative_ai}
 \end{figure}
 
@@ -92,24 +92,24 @@ There are a few main types of foundation models to consider: models designed for
 
 \begin{table}[h!]
 \centering
+\caption{Typology of Foundation Models in Artificial Intelligence: Families, Descriptions, and Representative Examples}
+\label{tab:foundation-typology}
 \footnotesize
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.3}
-\begin{tabularx}{\textwidth}{|>{\columncolor[HTML]{E8F0FF}[\tabcolsep][\tabcolsep]\bfseries\color[HTML]{003366}}p{2.5cm}|>{\columncolor[HTML]{F5F5F5}[\tabcolsep][\tabcolsep]}X|>{\columncolor[HTML]{F5F5F5}[\tabcolsep][\tabcolsep]}X|}
+\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
 \hline
 \rowcolor[HTML]{0066CC}\color{white}\textbf{Foundation Model Family} & \color{white}\textbf{Description} & \color{white}\textbf{Representative Examples and Typical Use Cases} \\
 \hline
-Computer Vision Foundation Models & Models designed to analyze, interpret, and generate visual content (images and, in some cases, video) within a unified framework. & Florence: image description, visual question answering, object recognition, real-time video integration. \\
+\textcolor[HTML]{003366}{\textbf{Computer Vision Foundation Models}} & Models designed to analyze, interpret, and generate visual content (images and, in some cases, video) within a unified framework. & Florence: image description, visual question answering, object recognition, real-time video integration. \\
 \hline
-Unified Multimodal Foundation Models & Models capable of processing multiple input types (text, images, audio, video) and learning complex cross‑modal semantic relationships for richer contextual understanding. & GPT-4o (OpenAI), Gemini 2.0 (Google DeepMind), LLaMA 3.2 (Meta): advanced multimodal generation and understanding. \\
+\textcolor[HTML]{003366}{\textbf{Unified Multimodal Foundation Models}} & Models capable of processing multiple input types (text, images, audio, video) and learning complex cross‑modal semantic relationships for richer contextual understanding. & GPT-4o (OpenAI), Gemini 2.0 (Google DeepMind), LLaMA 3.2 (Meta): advanced multimodal generation and understanding. \\
 \hline
-Large Language Models (LLMs) based on Transformers & Deep models built on Transformer architectures, specialized in understanding and generating natural language with strong contextual coherence. & Creation of ultra-realistic images, generation of synthetic data, enhancement of astronomical images, controlled deepfakes. \\
+\textcolor[HTML]{003366}{\textbf{Large Language Models (LLMs) based on Transformers}} & Deep models built on Transformer architectures, specialized in understanding and generating natural language with strong contextual coherence. & Creation of ultra-realistic images, generation of synthetic data, enhancement of astronomical images, controlled deepfakes. \\
 \hline
-Generative Adversarial Networks (GANs) & Architectures composed of two neural networks trained in competition (generator vs. discriminator) to produce samples resembling training data. & GPT-3.5, GPT-4, Claude 3.5 (Anthropic), Mistral Large (open source), Grok (xAI): conversation, coding, complex reasoning. \\
+\textcolor[HTML]{003366}{\textbf{Generative Adversarial Networks (GANs)}} & Architectures composed of two neural networks trained in competition (generator vs. discriminator) to produce samples resembling training data. & GPT-3.5, GPT-4, Claude 3.5 (Anthropic), Mistral Large (open source), Grok (xAI): conversation, coding, complex reasoning. \\
 \hline
 \end{tabularx}
-\caption{Typology of Foundation Models in Artificial Intelligence: Families, Descriptions, and Representative Examples}
-\label{tab:foundation-typology}
 \end{table}
 
 \FloatBarrier
@@ -128,28 +128,28 @@ GenAI systems are qualitatively different from earlier forms of \textbf{AI (e.g.
 \noindent\textcolor[HTML]{0066CC}{\textbf{Comparative Analysis: Traditional AI vs. Generative AI}}
 \begin{table}[!htbp]
 \centering
+\caption{Comparison between Traditional AI and Generative AI}
+\label{tab:traditional-vs-generative-ai}
 \small
-\begin{tabularx}{\textwidth}{|>{\columncolor[HTML]{E8F0FF}\bfseries\color[HTML]{003366}}p{2.5cm}|>{\columncolor[HTML]{F5F5F5}}X|>{\columncolor[HTML]{F5F5F5}}X|}
+\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{2.5cm}|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
 \hline
 \rowcolor[HTML]{0066CC}\color{white}\textbf{Aspect} & \color{white}\textbf{Traditional AI} & \color{white}\textbf{Generative AI} \\
 \hline
-Type of content & Structured (tables, databases) & Unstructured (text, images, audio, video) \\
+\textcolor[HTML]{003366}{\textbf{Type of content}} & Structured (tables, databases) & Unstructured (text, images, audio, video) \\
 \hline
-Models used & Task-specific models, often supervised & Foundation models (Transformers, LLMs) \\
+\textcolor[HTML]{003366}{\textbf{Models used}} & Task-specific models, often supervised & Foundation models (Transformers, LLMs) \\
 \hline
-Learning & Specific, labeled data & Large unlabeled datasets, self-supervised learning \\
+\textcolor[HTML]{003366}{\textbf{Learning}} & Specific, labeled data & Large unlabeled datasets, self-supervised learning \\
 \hline
-Capabilities & Classification, prediction & Content generation, classification, prediction \\
+\textcolor[HTML]{003366}{\textbf{Capabilities}} & Classification, prediction & Content generation, classification, prediction \\
 \hline
-Versatility & Limited to a specific task & Versatile, multi-task \\
+\textcolor[HTML]{003366}{\textbf{Versatility}} & Limited to a specific task & Versatile, multi-task \\
 \hline
-Application examples & Object recognition, fraud detection & ChatGPT, DALL·E 2, Stable Diffusion, Bard \\
+\textcolor[HTML]{003366}{\textbf{Application examples}} & Object recognition, fraud detection & ChatGPT, DALL·E 2, Stable Diffusion, Bard \\
 \hline
-Limitations & High performance on a single task & Risk of hallucinations, lack of explainability \\
+\textcolor[HTML]{003366}{\textbf{Limitations}} & High performance on a single task & Risk of hallucinations, lack of explainability \\
 \hline
 \end{tabularx}
-\caption{Comparison between Traditional AI and Generative AI}
-\label{tab:traditional-vs-generative-ai}
 \end{table}
 
 \FloatBarrier
