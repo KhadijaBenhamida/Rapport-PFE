@@ -48,57 +48,32 @@ FT-05 & ``Validate this specification against the configured rules.'' & SpecVali
 The selected scenarios reflect the primary value offered to the end-users of the prototype: access information on governance, read project maturity using documented evidence, amend the controlled information, send context aware communication and check the specifications using deterministic rules.\\
 \noindent\textbf{Confidentiality note.} All screen captures contained within this chapter are disguised examples. All names, e-mail accounts, internal ids, share point URLs, housing paths will need to be obscured for the jury copy.
 
+\begingroup
+\setlength{\intextsep}{6pt}
+\setlength{\textfloatsep}{6pt}
+\setlength{\floatsep}{6pt}
+\captionsetup[figure]{skip=4pt}
+
 \subsection{\textcolor[HTML]{003D99}{Who-is-Who Scenario Evidence}}
 
 The Who-is-Who test sequence was tested in a live lookup path: user requests the name of a responsible on a specific project and component, and the conversational layer identifies the project context and the backend logic to route the request to the governance dataset. The actual feasibility of this scenario depends on two observable aspects: the assistance being aware of the name of the project entered by the user and the orchestration managing the lookup or redirect when the expected record does not exist.
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.8\textwidth]{images_pfe/project match.png}
+\includegraphics[width=0.8\textwidth]{images_pfe/who is who1.png}
 \caption{Anonymized Copilot Studio capture used to support project disambiguation during the Who-is-Who validation path.}
 \label{fig:results-who-conversation}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.62\textwidth]{images_pfe/condition who.png}
-\caption{Anonymized backend orchestration capture showing the conditional fallback used when the expected Who-is-Who record is not resolved.}
-\label{fig:results-who-flow}
 \end{figure}
 
 \subsection{\textcolor[HTML]{003D99}{Gate Status Scenario Evidence}}
 
 For gate status retrieval, the evidence needed to support the argument that the assistant searches through documents as opposed guessing at runtime via conversational utterance. Copilot Studio knowledge configuration is used for gate reasoning as a visual evidence, and the gate interpretation rule as an other visual evidence for highest documented maturity level return.
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.88\textwidth]{images_pfe/gate1.png}
-\caption{Anonymized Copilot Studio configuration capture used during gate-status validation to identify the relevant gate knowledge source.}
-\label{fig:results-gate-conversation}
-\end{figure}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.88\textwidth]{images_pfe/gate2.png}
-\caption{Anonymized gate reasoning capture showing how the prototype derives the highest validated gate from documented evidence.}
-\label{fig:results-gate-flow}
-\end{figure}
 
 \subsection{\textcolor[HTML]{003D99}{Responsible Update Scenario Evidence}}
 
 The update case is the most sensitive function path because it combines user input, authorization, write, and confirmation. The first proof here is regarding to conversation input state where user supply the real component fragment to go on the update procedure. The second proof shows the backend action‘s signature in order to supply update parameters to flow.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.36\textwidth]{images_pfe/Component input.png}
-\caption{Anonymized conversational capture for the responsible-update scenario, where the prototype requests the component fragment before proceeding.}
-\label{fig:results-update-conversation}
-\end{figure}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.38\textwidth]{images_pfe/update name1.png}
-\caption{Anonymized backend action capture showing the update parameters transmitted to the responsible-assignment flow.}
-\label{fig:results-update-flow}
-\end{figure}
 
 \subsection{\textcolor[HTML]{003D99}{Email and Notification Scenario Evidence}}
 
@@ -106,35 +81,35 @@ The use case was proved with the help of request path where LEON receives necess
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.72\textwidth]{images_pfe/email assistant.png}
+\includegraphics[width=0.72\textwidth]{images_pfe/email1.png}
 \caption{Anonymized conversational capture used during e-mail and notification validation for request capture and field completion.}
 \label{fig:results-email-conversation}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.42\textwidth]{images_pfe/email.png}
+\includegraphics[width=0.42\textwidth]{images_pfe/email2.png}
 \caption{Anonymized backend connector capture showing the notification path through recipient lookup and e-mail sending actions.}
 \label{fig:results-email-flow}
 \end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.72\textwidth]{images_pfe/email3.png}
+\caption{Anonymized conversational capture used during e-mail and notification validation for request capture and field completion.}
+\label{fig:results-email-conversation}
+\end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.42\textwidth]{images_pfe/email4.png}
+\caption{Anonymized backend connector capture showing the notification path through recipient lookup and e-mail sending actions.}
+\label{fig:results-email-flow}
+\end{figure}
 \subsection{\textcolor[HTML]{003D99}{SpecValidator Scenario Evidence}}
 
 The SpecValidator path is less conversational than the governance services, but it still begins from the same prototype entry point. In the current working set of screenshots, the available evidence shows the test environment used to launch the scenario and the validation backend that executes deterministic checks. A dedicated anonymized test-pane capture of the exact validation request would remain preferable in a final defended version.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.34\textwidth]{images_pfe/copilot studio.jpg}
-\caption{Prototype conversational environment used to trigger the SpecValidator validation path from Copilot Studio.}
-\label{fig:results-spec-conversation}
-\end{figure}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.3\textwidth]{images_pfe/azure function.png}
-\caption{Validation backend evidence: Azure Functions service used to execute deterministic specification checks.}
-\label{fig:results-spec-flow}
-\end{figure}
 
 % ═════════════════════════════════════════════════════════════════════════════
 \section{\textcolor[HTML]{0066CC}{Error and Robustness Testing}}
@@ -185,9 +160,9 @@ Across these cases, the validation principle remained the same: an unavailable o
 \section{\textcolor[HTML]{0066CC}{Security Validation and RBAC Review}}
 % ═════════════════════════════════════════════════════════════════════════════
 
-The review of RBAC was not made by non specified implicit internal rules but by testable empirical behaviors of the system. With LEON, there is no re-definition of the enterprise permissions: they are inherited from the access rights for the linked repository or connectors. This is an important aspect for governance, as the same conversational query can result in read success, write success, and deny based on the access rights on the SharePoint or the Excel sheet.
+The review of RBAC was not made by non specified implicit internal rules but by testable empirical behaviors of the system. With LEON, there is no re-definition of the enterprise permissions: they are inherited from the access rights for the linked repository or connectors. This is an important aspect for governance, as the same conversational query can result in read success, write success, and deny based on the access rights on the SharePoint or the Excel sheet.\\
 
-Two types of case are considered in validation: \textbf{authorization} or \textbf{non-authorization} cases. If the case is an authorization, then the request is authorized, the workflow proceeds as expected, and data is read or written. If the case is a non-authorization, then the request will not even reach a hidden workaround. The action is denied and a clear message appears to the user. The execution back-path can be visualized through the “Power Automate” run history. Realistically, someone with write access to a responsibility assignment should see the update process, while someone without it should have the flow blocked by an authorization message rather than a partial, hidden, or invisible modification.
+Two types of case are considered in validation: \textbf{authorization} or \textbf{non-authorization} cases. If the case is an authorization, then the request is authorized, the workflow proceeds as expected, and data is read or written. If the case is a non-authorization, then the request will not even reach a hidden workaround. The action is denied and a clear message appears to the user. The execution back-path can be visualized through the “Power Automate” run history. Realistically, someone with write access to a responsibility assignment should see the update process, while someone without it should have the flow blocked by an authorization message rather than a partial, hidden, or invisible modification.\\
 The full proof of the this security test is (1) \textbf{the client message stating the permission} is allowed or denied to the end-user and (2) the \textbf{flow trace} proving if Power Automate flowed through the flow or not, and (3) \textbf{the modification side effect} to the source data if it were not to be changed at all. There is enough information to guarantee the RBAC prototype as it prove that we effect on the execution path and not only on the words displayed to the user.
 \begin{table}[H]
 \centering
@@ -206,19 +181,8 @@ Non-authorized & Test with the same change that demands authorization to continu
 \end{tabularx}
 \end{table}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.38\textwidth]{images_pfe/update name1.png}
-\caption{Authorized-path evidence: anonymized input payload reaching the responsible-update flow before successful execution.}
-\label{fig:results-rbac-success}
-\end{figure}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.68\textwidth]{images_pfe/update name.png}
-\caption{Refusal-path evidence: explicit failure branch returned by the backend logic when the action cannot proceed under the current execution conditions.}
-\label{fig:results-rbac-refusal}
-\end{figure}
+\endgroup
 
 % ═════════════════════════════════════════════════════════════════════════════
 \section{\textcolor[HTML]{0066CC}{Results and Technical Observations}}
