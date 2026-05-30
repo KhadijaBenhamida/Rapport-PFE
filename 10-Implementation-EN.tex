@@ -796,13 +796,44 @@ Output is mode-specific and designed for both usability and traceability:
 \section{\textcolor[HTML]{0066CC}{SpecValidator Implementation}}
 % ═════════════════════════════════════════════════════════════════════════════
 
-% ─────────────────────────────────────────────────────────────────────────────
-% ═════════════════════════════════════════════════════════════════════════════
-\section{\textcolor[HTML]{0066CC}{Summary of Implemented Artifacts}}
-% ═════════════════════════════════════════════════════════════════════════════
-
 
 % ─────────────────────────────────────────────────────────────────────────────
 % ═════════════════════════════════════════════════════════════════════════════
 \section{\textcolor[HTML]{0066CC}{Deployment and Change Management}}
 % ═════════════════════════════════════════════════════════════════════════════
+
+How is deployment made at that stage of project? For LEON, deployment is not really a real production stage at that phase of the project, but it represented a controlled transitory step from the development level to a first operational exposure as beta testing. This deployment did not mean organization-wide deployment, but in term of conditions, technical characteristics and conditions to allow user sharing of the assistant.
+\begin{table}[H]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\caption{Current deployment positioning of LEON during the implementation phase.}
+\label{tab:leon-deployment-positioning}
+\begin{tabularx}{\textwidth}{|p{3.4cm}|X|}
+\hline
+\rowcolor[HTML]{E6F2FF}\textcolor[HTML]{003D99}{\textbf{Aspect}} & \textcolor[HTML]{003D99}{\textbf{Current positioning}} \\
+\hline
+Deployment stage & Controlled pre-production/beta exposure phase, not production. \\
+\hline
+Target channels & End user access implemented through Teams and Copilot. \\
+\hline
+Development and test interface & Copilot Studio chat which is used for implementation and validation. \\
+\hline
+First-use condition & Requires authorization on SharePoint before access to the connected resources. \\
+\hline
+SpecValidator readiness & Customized topic, rule base is embedded, and custom connector, Azure function and evaluation data set along with real end-user test on DOCX files are built. \\
+\hline
+Governance framing & C3 confidentiality level; Planning assumptions are 50 users, 100-200 conversations/month, 1000 credits/month \\
+\hline
+\end{tabularx}
+\end{table}
+
+\noindent\textbf{Target channels and access conditions.} The solution‘s intended target end-user interface is the set of Teams and Copilot channels where it is designed to support the desired type of end-user interaction profile with the solution. In deployment and validation it was also tested with the agent through the Copilot Studio chat that was also within the development/test environment. A general deployment capability is also a function of a specific access condition that would require SharePoint access authorization prior to allowing access to necessary resources for first-time use. In LEON‘s case usability was the dialog control and successful access to supported enterprise data sources.\\
+
+\noindent\textbf{Technical preparation of the specification-validation capability.} In terms of deployment, the specification validation capability is one of the most concrete set up within LEON. In particular the topic 'Valider un document CDC' was developed within the conversational layer and the validation rules has been developed in the template-blueprint.json. In order to make the feature work, a REST API connector with the Azure Function ValidateTemplate has been developed in Azure App Service. \\
+
+\noindent\textbf{Beta exposure and tester onboarding.} The first user exposure is done via a dedicated Beta usage without going through an open launch. A testing follow-up meeting was organized in order to check: whether the agent was properly installed; the presence or absence of condition or access problems; to speak about blockers and issues related to the technical constraints; to take the opportunity to take feedbacks from the users. This plan was defined by the way governance information was treated: information being tagged as C3 confidentiality level.The agent card was at the same time populated with initial deployment assumptions (50 users, 100-200 calls/month, 1000 credits/month) which might potentially contribute to the assumptions about the deployment governance, but were never perceived as recorded data. In the same documentation, it was pointed out that the critical agents have to be migrated to their dedicated PROD instance.\\
+
+\noindent\textbf{Feedback management and refinement.} Feedback management was the main part of the change management process. The initial use feedback from beta-users identified that there was a difficulty with accessing/requesting the information and it behaves well with generic questions and poorly with very specific questions and sometimes extrapolates too much with the question about processes. The more significant element here was the statement that if there isn‘t a source document that covers a process then LEON should state rather than provide an answer. Feedback was effectively used for the fine-tuning of the system, since in engineering situations it is generally more acceptable to have an answer that admits that there is no information, than one that makes things up. Change management therefore is an element of iteration and experiment, and this involves direct emphasis on answer reliability and hallucination.\\
+
+\noindent\textbf{Current limits and positioning.} LEON‘s maturity levels are well defined: All use cases have been probably listed, and only small residual hallucination risk could exist, no formal list of evaluation questions could be established and an access to the LLM targeted environment is not given. As consequences, the deployment status may not be considered as production use: It rather should be described as an underway lift off, based on the preproduction principle to improve the accessibility, the usage and the reactivity before a possible wide spread deployment.

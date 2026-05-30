@@ -115,8 +115,7 @@ The SpecValidator path is less conversational than the governance services, but 
 \section{\textcolor[HTML]{0066CC}{Error and Robustness Testing}}
 % ═════════════════════════════════════════════════════════════════════════════
 
-Nominal execution alone is not sufficient for a governance assistant. In practice, the prototype also has to react correctly when the user request is incomplete, when the requested entity does not exist, or when the backend source cannot be reached. For this reason, robustness testing focused on explicit error paths already modeled in the implementation.
-
+It appeared that a nominal execution with general nominality execution was insufficient for a governance assistant. In fact, in real execution, the prototype also had to manage implicit cases where the user did not finish his request, or the asked entity or the backend source could be inaccessible. So robustness tests aimed at explicit error paths already modeled in implementation.
 \begin{table}[H]
 \centering
 \footnotesize
@@ -127,34 +126,21 @@ Nominal execution alone is not sufficient for a governance assistant. In practic
 \hline
 \rowcolor[HTML]{E6F2FF}\textcolor[HTML]{003D99}{\textbf{Error code}} & \textcolor[HTML]{003D99}{\textbf{Typical trigger}} & \textcolor[HTML]{003D99}{\textbf{Expected prototype behavior}} & \textcolor[HTML]{003D99}{\textbf{Control mode}} \\
 \hline
-\texttt{PROJECT\_NOT\_FOUND} & Unknown or misspelled project name & LEON does not guess silently. It asks for clarification or proposes the closest known project name when a meaningful fallback is available. & Clarification \\
+\texttt{PROJECT NOT FOUND} & Unknown or misspelled project name & LEON does not quietly guess. It either asks a question or guesses the nearest known project name if there is a reasonable default option. & Clarification \\
 \hline
-\texttt{COMPONENT\_NOT\_FOUND} & Component absent from Excel sheet or document repository & LEON stops the nominal path and asks the user to refine the component name instead of returning an invented result. & Clarification \\
+\texttt{COMPONENT NOT FOUND} & Missing component from Excel sheet or file store & LEON interrupts the nominal path and asks user to give a better component name instead of providing an invalid result. & Clarification \\
 \hline
-\texttt{ROLE\_NOT\_FOUND} & Requested role is not present in the selected project structure & LEON reports that the role is unavailable in the current context and can redirect the user toward available roles. & Clarification \\
+\texttt{ROLE NOT FOUND} & The selected project has no specified roles & Indicates that the role is not present in the current context and then suggests available roles. & Clarification \\
 \hline
-\texttt{UNAUTHORIZED} & User attempts to read or modify data without the necessary inherited permission & The flow must stop, the backend execution must show a refusal path, and the user must receive an explicit authorization message. & Refusal / escalation \\
+\texttt{UNAUTHORIZED} & User attempts to read/write but lacks inherited privilege & The flow must stop, the backend execution must be visible on the refusal path and  the user must receive a clear authorization message. & Refusal / escalation \\
 \hline
-\texttt{DATASET\_UNAVAILABLE} & SharePoint, Excel, or related backend connector is temporarily unreachable & LEON reports that the service cannot complete the request now, preserves the integrity of the transaction, and directs the user to retry or escalate if needed. & Fallback \\
+\texttt{DATASET UNAVAILABLE} & SharePoint, Excel or any other backend connector is currently down & LEON responds that the request cannot be serviced at the present time and recommends retrying or escalating. & Fallback \\
 \hline
-\end{tabularx}
+\end{tabularx}s
 \end{table}
 
-Across these cases, the validation principle remained the same: an unavailable or ambiguous situation should lead to an explicit conversational control path. For example, a missing component name should trigger a reformulation request, while a permission problem should stop the action immediately and leave a trace in the backend execution history. This is particularly important for update scenarios, where silent degradation would be more problematic than an explicit refusal.
+The validation rule remains the same: Any implicit or undeclared situation must be mapped to an explicit control flow on the conversation. For example a non-existing component name would then raise a reformulate request. A permission failure would prevent the action from performing and leave a history mark on the backend execution history.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.62\textwidth]{images_pfe/condition who.png}
-\caption{Illustration of the fallback path used for missing-record situations such as \texttt{PROJECT\_NOT\_FOUND} or unresolved lookup context.}
-\label{fig:results-error-project-not-found}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.68\textwidth]{images_pfe/update name.png}
-\caption{Illustration of a guarded failure branch returning an explicit refusal or failure message instead of a silent write when the requested action cannot proceed.}
-\label{fig:results-error-unauthorized}
-\end{figure}
 
 % ═════════════════════════════════════════════════════════════════════════════
 \section{\textcolor[HTML]{0066CC}{Security Validation and RBAC Review}}
@@ -188,51 +174,49 @@ Non-authorized & Test with the same change that demands authorization to continu
 \section{\textcolor[HTML]{0066CC}{Results and Technical Observations}}
 % ═════════════════════════════════════════════════════════════════════════════
 
-The validation work confirms that the prototype can execute the main governance scenarios in a coherent end-to-end chain: the request is entered in Copilot Studio, routed through the conversational topic structure, processed by Power Automate, and resolved from enterprise data sources or validation rules. What matters here is not raw performance measurement, but the consistency between user request, backend execution, and returned result.
+The validation work demonstrate that the prototype is actually executing all the main governance scenarios along an end-to-end chain, starting from the request input in Copilot Studio, moving through the Conversational Topic structure, up to Power Automate execution and resolution with enterprise data source and validation rules.There is no question of performance, it‘s more about the coherence between the user request and the back-end answer.
 
-Several technical observations emerged from the tests and from the inspection of the implemented flows:
+The below technical notes have been derived from tests and also from reviewing implemented flows:
 
 \begin{itemize}
-	\item The quality of governance answers depends directly on the quality of the source repositories. In the Who-is-Who service, naming inconsistencies in Excel sheets affect matching effort, even when normalization and fallback logic are present.
-	\item Gate status retrieval is only as reliable as the document organization in the gate repositories. If a deliverable is missing, misplaced, or not yet uploaded, LEON should report the absence of evidence rather than fabricate a maturity state.
-	\item The update service is more sensitive than a read-only query because it combines interpretation, authorization, confirmation, and write execution. This makes explicit confirmation and traceability essential, even in prototype mode.
-	\item The email/notification service behaves as a controlled enterprise action rather than a generic text-generation feature. Recipient resolution, message completeness, and connector availability all influence whether the request ends in execution, refinement, or refusal.
-	\item SpecValidator remains the most deterministic block in the architecture because its result depends on configured rules applied to an input document, not on conversational variation. This makes it particularly suitable for repeatable compliance checking, provided that the active rule sets and sample inputs are clearly versioned.
+	\item The better the quality of source repositories, the better the answer will be to the governance questions. Naming inconsistencies between Excel sheets cause difficulty for matches even in the off-branch Whose-is-Who service which has naming normalization and fallback to default source when fails.
+	\item The retrieval of gate status should rely on how well documents are organized in the gate repositories. In the case where a deliverable may be missing, in the wrong directory, or not yet available, LEON should assign no evidence to that state of maturity.
+	\item Update service is more sensitive than read-only query due to interpretation, authorization, authorization and write execution, therefore, positive acknowledgment and traceability is important even in prototype.
+	\item Email/notification functionalities are presented as enterprise features rather than general text-generation. Receiver resolution, quality of message and connector availability of mail box determine whether the request will be delivered to delivery, refinement or rejection.
+	\item SpecValidator is the most deterministic of the block in the architecture, because its output is driven by a fixed document of rules applied to a fixed input, and not by the nuances of dialogue, therefore it provides a very suitable method for repeatable checking of compliance, given that the rules are explicitly version controlled, as are the inputs.
 \end{itemize}
 
-One important conclusion follows from these observations: the prototype is functionally coherent, but it should still be presented as a \textbf{validated prototype}, not as a fully industrialized production service. The Copilot Studio test pane is appropriate for proving service behavior and integration logic, yet it does not replace a full operational campaign in the final end-user channel.
-
+Based on all the above findings and conclusions, we can see that the prototype is working as expected, but we should still consider as a proved up to prototype, not an industrialized service deliver. The Copilot Studio Test pane is good for a proof of behavior and integration logic, but cannot replace a full operational system on the actual end-user channel.
 % ═════════════════════════════════════════════════════════════════════════════
 \section{\textcolor[HTML]{0066CC}{Synthesis Against Project Objectives (SO1..SO5)}}
 % ═════════════════════════════════════════════════════════════════════════════
 
-The final step of the validation chapter is to relate the observed evidence to the measurable sub-objectives defined earlier in the report. Table~\ref{tab:results-vs-objectives} provides this synthesis without overstating what has and has not been demonstrated at prototype level.
+The final section of the validation chapter relates back to the sub-objectives defined earlier in this report. Table~\ref{tab:results-vs-objectives} pulls these together without overstating what has, and has not, been demonstrated by prototype.
 
 \begin{table}[H]
 \centering
 \footnotesize
 \renewcommand{\arraystretch}{1.25}
-\caption{Synthesis of validation evidence against objectives SO1 to SO5.}
+\caption{Synthesis of validation results against project objectives SO1 to SO5.}
 \label{tab:results-vs-objectives}
 \begin{tabularx}{\textwidth}{|p{2.5cm}|X|p{2.5cm}|}
 \hline
 \rowcolor[HTML]{E6F2FF}\textcolor[HTML]{003D99}{\textbf{Objective}} & \textcolor[HTML]{003D99}{\textbf{Validation evidence}} & \textcolor[HTML]{003D99}{\textbf{Assessment}} \\
 \hline
-SO1 -- Who-is-Who Lookup & FT-01; workbook structure shown in Figure~\ref{fig:w1-dataset-structure}; lookup path shown in Figure~\ref{fig:w4-lookup}; explicit error handling for lookup shown in Figure~\ref{fig:w5-error-condition}. & Achieved at prototype level \\
+SO1 -- Who-is-Who Lookup & This target is covered by scenario FT-01 as well as the workbook structure in Figure~\ref{fig:w1-dataset-structure}, lookup path in Figure~\ref{fig:w4-lookup}, and the explicit fallback as in Figure~\ref{fig:w5-error-condition}.  From this it can be seen that the prototype can be enabled to read the responsibility information from the appropriate source of governance and explicitly handle uncaught instances. & Validated at prototype level \\
 \hline
-SO2 -- Gate Status Support & FT-02; gate repository structure shown in Figure~\ref{fig:gate-knowledge-structure}; gate detection logic shown in Figure~\ref{fig:gate-detection-workflow}; robustness table for missing or ambiguous cases. & Achieved at prototype level \\
+SO2 -- Gate Status Support & This concept is clarified through the use of scenario FT-02 as shown in Figure~\ref{fig:gate-knowledge-structure}, detection architecture as shown in Figure~\ref{fig:gate-detection-workflow}, and tests for robustness under cases that are missing or ambiguous, to illustrate that the state of a gate is derived from a documentation based gate repository rather than a prediction. & Validated at prototype level \\
 \hline
-SO3 -- Document Management Support & Evidence of gate-based document organization through SharePoint repository usage in FT-02; document upload path identified in implementation as an extension still in development. & Partially achieved \\
+SO3 -- Document Management Support & The actual implementation show that LEON has already a gate based document organization at the SharePoint level, due to the gate-status scenario. The complete path of document upload is still visible in the implementation chapter, because it was an extension that has not yet been done. Therefore this objective is only partially achieved. & Partially validated \\
 \hline
-SO4 -- Communication Support & FT-04; email architecture shown in Figure~\ref{fig:email-architecture}; conversational input and recipient handling shown in Figure~\ref{fig:email-assistant-flow}; explicit notification error handling. & Achieved at prototype level \\
+SO4 -- Communication Support & Shows that for FT-04, the email service defined in Figure~\ref{fig:email-architecture}, and the path used to capture conversation and distribute to recipients as described in Figure~\ref{fig:email-assistant-flow}, a messaging service is able to collect message parameters, determine recipients and spread an organized notification path with predefined failure cases. & Validated at prototype level \\
 \hline
-SO5 -- SpecValidator (Compliance Checking) & FT-05; deterministic validation service described in Chapter~\ref{chap:implementation}; validation execution path separated from conversational variation; exact validated rule set and sample corpus remain [à préciser]. & Achieved in principle, partially documented \\
+SO5 -- SpecValidator (Compliance Checking) & FT-05 gives a notion of the method chosen to perform the validation service; a deterministic validation service with the component distinct from the one for the conversational variation, is shown to be the Chapter~\ref{chap:implementation} ,the logic of the architecture is coherent to the one wanted. Nevertheless the specification of the set of validated rule and reference sample corpus ought to be more precise in the report. & Validated in principle, documentation still to be completed \\
 \hline
 \end{tabularx}
 \end{table}
 
-Taken together, these results show that LEON already demonstrates the core logic expected from a governance assistant: it reads authoritative sources, reacts explicitly to uncertainty, keeps controlled write behavior for sensitive operations, and isolates deterministic validation where conversation alone would not be sufficient.
-
+To summarize, this synthesis finally proves that the main functionalities objectives of LEON have been met on a prototype scale specifically relating to governance lookup, gate-status support, wired update flow, and help in communication. However the missing element does not lie with either a dominant design trend of the project but in the relative maturity of some extensions, and the quality of documentation for some validation assets especially the SpecValidator and document upload functionalities. 
 % ═════════════════════════════════════════════════════════════════════════════
 \section*{Questions to Clarify}
 % ═════════════════════════════════════════════════════════════════════════════
